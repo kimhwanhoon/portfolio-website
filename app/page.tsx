@@ -6,13 +6,26 @@ import { AboutSection } from "@/components/sections/about-section";
 import { ContactCTA } from "@/components/sections/contact-cta";
 import { getPublishedPortfolioItems } from "@/lib/queries/portfolio";
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Kim Hwanhoon",
+  jobTitle: "Frontend Developer",
+  description: "I craft web experiences that just work.",
+  url: process.env.NEXT_PUBLIC_SITE_URL || "https://kimhwanhoon.com",
+};
+
 export default async function HomePage() {
   const items = await getPublishedPortfolioItems();
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <SiteHeader />
-      <main>
+      <main id="main">
         <HeroSection />
         <PortfolioSection items={items} />
         <AboutSection />

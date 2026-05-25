@@ -1,0 +1,88 @@
+- generic [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "Kim Hwanhoon" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - button "Open menu" [active] [ref=e97] [cursor=pointer]:
+        - img [ref=e98]
+  - main [ref=e7]:
+    - generic [ref=e10]:
+      - generic [ref=e11]:
+        - paragraph [ref=e12]: Frontend Developer
+        - heading "Kim Hwanhoon" [level=1] [ref=e13]
+      - paragraph [ref=e14]: I craft web experiences that just work.
+      - generic [ref=e15]:
+        - link "Get in Touch" [ref=e16] [cursor=pointer]:
+          - /url: mailto:hello@example.com
+          - img
+          - text: Get in Touch
+        - link "LinkedIn" [ref=e17] [cursor=pointer]:
+          - /url: https://linkedin.com/in/
+          - img
+          - text: LinkedIn
+        - link "GitHub" [ref=e18] [cursor=pointer]:
+          - /url: https://github.com/
+          - img
+          - text: GitHub
+    - generic [ref=e21]:
+      - heading "Selected Work" [level=2] [ref=e22]
+      - link "No image E-Commerce Dashboard A real-time analytics dashboard for e-commerce stores with live sales tracking and inventory management. Next.js TypeScript Tailwind CSS +3" [ref=e24] [cursor=pointer]:
+        - /url: /portfolio/e-commerce-dashboard
+        - generic [ref=e26]: No image
+        - generic [ref=e27]:
+          - heading "E-Commerce Dashboard" [level=3] [ref=e28]
+          - paragraph [ref=e29]: A real-time analytics dashboard for e-commerce stores with live sales tracking and inventory management.
+          - generic [ref=e30]:
+            - generic [ref=e31]: Next.js
+            - generic [ref=e32]: TypeScript
+            - generic [ref=e33]: Tailwind CSS
+            - generic [ref=e34]: "+3"
+    - generic [ref=e37]:
+      - generic [ref=e38]:
+        - heading "About" [level=2] [ref=e39]
+        - generic [ref=e40]:
+          - paragraph [ref=e41]: I'm a frontend developer who focuses on building clean, performant, and accessible web applications. I care deeply about user experience and believe that great interfaces should feel invisible.
+          - paragraph [ref=e42]: With experience across the full JavaScript ecosystem, I enjoy turning complex requirements into simple, elegant solutions. When I'm not coding, I'm exploring new tools and contributing to the developer community.
+      - generic [ref=e43]:
+        - heading "Skills & Technologies" [level=3] [ref=e44]
+        - generic [ref=e45]:
+          - generic [ref=e46]: React
+          - generic [ref=e47]: Next.js
+          - generic [ref=e48]: TypeScript
+          - generic [ref=e49]: Tailwind CSS
+          - generic [ref=e50]: Node.js
+          - generic [ref=e51]: PostgreSQL
+          - generic [ref=e52]: REST APIs
+          - generic [ref=e53]: Git
+    - generic [ref=e56]:
+      - heading "Let's Connect" [level=2] [ref=e57]
+      - paragraph [ref=e58]: I'm always open to new opportunities and interesting conversations. Feel free to reach out.
+      - generic [ref=e59]:
+        - link "Email Me" [ref=e60] [cursor=pointer]:
+          - /url: mailto:hello@example.com
+          - img
+          - text: Email Me
+        - link "LinkedIn" [ref=e61] [cursor=pointer]:
+          - /url: https://linkedin.com/in/
+          - img
+          - text: LinkedIn
+        - link "GitHub" [ref=e62] [cursor=pointer]:
+          - /url: https://github.com/
+          - img
+          - text: GitHub
+  - contentinfo [ref=e63]:
+    - generic [ref=e64]:
+      - paragraph [ref=e65]: © 2026 Kim Hwanhoon
+      - generic [ref=e66]:
+        - link "Email" [ref=e67] [cursor=pointer]:
+          - /url: mailto:hello@example.com
+          - img [ref=e68]
+        - link "LinkedIn" [ref=e71] [cursor=pointer]:
+          - /url: https://linkedin.com/in/
+          - img [ref=e72]
+        - link "GitHub" [ref=e75] [cursor=pointer]:
+          - /url: https://github.com/
+          - img [ref=e76]
+  - button "Open Next.js Dev Tools" [ref=e83] [cursor=pointer]:
+    - img [ref=e84]
+  - alert [ref=e87]

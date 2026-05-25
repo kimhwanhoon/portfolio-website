@@ -1,0 +1,119 @@
+- generic [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link [ref=e99] [cursor=pointer]:
+        - /url: /
+        - text: Kim Hwanhoon
+      - button [ref=e100] [cursor=pointer]:
+        - img [ref=e98]
+  - main [ref=e7]:
+    - generic [ref=e10]:
+      - generic [ref=e11]:
+        - paragraph [ref=e12]: Frontend Developer
+        - heading [level=1] [ref=e101]: Kim Hwanhoon
+      - paragraph [ref=e14]: I craft web experiences that just work.
+      - generic [ref=e15]:
+        - link [ref=e102] [cursor=pointer]:
+          - /url: mailto:hello@example.com
+          - img
+          - text: Get in Touch
+        - link [ref=e103] [cursor=pointer]:
+          - /url: https://linkedin.com/in/
+          - img
+          - text: LinkedIn
+        - link [ref=e104] [cursor=pointer]:
+          - /url: https://github.com/
+          - img
+          - text: GitHub
+    - generic [ref=e21]:
+      - heading [level=2] [ref=e105]: Selected Work
+      - link [ref=e106] [cursor=pointer]:
+        - /url: /portfolio/e-commerce-dashboard
+        - generic [ref=e26]: No image
+        - generic [ref=e27]:
+          - heading [level=3] [ref=e107]: E-Commerce Dashboard
+          - paragraph [ref=e29]: A real-time analytics dashboard for e-commerce stores with live sales tracking and inventory management.
+          - generic [ref=e30]:
+            - generic [ref=e31]: Next.js
+            - generic [ref=e32]: TypeScript
+            - generic [ref=e33]: Tailwind CSS
+            - generic [ref=e34]: "+3"
+    - generic [ref=e37]:
+      - generic [ref=e38]:
+        - heading [level=2] [ref=e108]: About
+        - generic [ref=e40]:
+          - paragraph [ref=e41]: I'm a frontend developer who focuses on building clean, performant, and accessible web applications. I care deeply about user experience and believe that great interfaces should feel invisible.
+          - paragraph [ref=e42]: With experience across the full JavaScript ecosystem, I enjoy turning complex requirements into simple, elegant solutions. When I'm not coding, I'm exploring new tools and contributing to the developer community.
+      - generic [ref=e43]:
+        - heading [level=3] [ref=e109]: Skills & Technologies
+        - generic [ref=e45]:
+          - generic [ref=e46]: React
+          - generic [ref=e47]: Next.js
+          - generic [ref=e48]: TypeScript
+          - generic [ref=e49]: Tailwind CSS
+          - generic [ref=e50]: Node.js
+          - generic [ref=e51]: PostgreSQL
+          - generic [ref=e52]: REST APIs
+          - generic [ref=e53]: Git
+    - generic [ref=e56]:
+      - heading [level=2] [ref=e110]: Let's Connect
+      - paragraph [ref=e58]: I'm always open to new opportunities and interesting conversations. Feel free to reach out.
+      - generic [ref=e59]:
+        - link [ref=e111] [cursor=pointer]:
+          - /url: mailto:hello@example.com
+          - img
+          - text: Email Me
+        - link [ref=e112] [cursor=pointer]:
+          - /url: https://linkedin.com/in/
+          - img
+          - text: LinkedIn
+        - link [ref=e113] [cursor=pointer]:
+          - /url: https://github.com/
+          - img
+          - text: GitHub
+  - contentinfo [ref=e63]:
+    - generic [ref=e64]:
+      - paragraph [ref=e65]: © 2026 Kim Hwanhoon
+      - generic [ref=e66]:
+        - link [ref=e114] [cursor=pointer]:
+          - /url: mailto:hello@example.com
+          - img [ref=e68]
+        - link [ref=e115] [cursor=pointer]:
+          - /url: https://linkedin.com/in/
+          - img [ref=e72]
+        - link [ref=e116] [cursor=pointer]:
+          - /url: https://github.com/
+          - img [ref=e76]
+  - button "Open Next.js Dev Tools" [ref=e83] [cursor=pointer]:
+    - img [ref=e84]
+  - alert [ref=e87]
+  - dialog [ref=e120]:
+    - button "Close" [active] [ref=e121] [cursor=pointer]:
+      - img
+      - generic [ref=e122]: Close
+    - generic [ref=e123]:
+      - generic [ref=e124]:
+        - heading "E-Commerce Dashboard" [level=1] [ref=e126]
+        - generic [ref=e127]:
+          - generic [ref=e128]: Next.js
+          - generic [ref=e129]: TypeScript
+          - generic [ref=e130]: Tailwind CSS
+          - generic [ref=e131]: PostgreSQL
+          - generic [ref=e132]: Drizzle ORM
+          - generic [ref=e133]: Chart.js
+      - separator [ref=e134]
+      - generic [ref=e135]:
+        - heading "Overview" [level=2] [ref=e136]
+        - paragraph [ref=e137]:
+          - text: A comprehensive analytics dashboard built for e-commerce businesses. It provides
+          - strong [ref=e138]: real-time insights
+          - text: into sales performance, customer behavior, and inventory levels.
+        - heading "Key Features" [level=2] [ref=e139]
+        - list [ref=e140]:
+          - listitem [ref=e141]: Live sales tracking with WebSocket updates
+          - listitem [ref=e142]: Interactive charts and data visualizations
+          - listitem [ref=e143]: Inventory management with low-stock alerts
+          - listitem [ref=e144]: Customer segmentation analytics
+          - listitem [ref=e145]: Mobile-responsive design
+        - heading "Technical Highlights" [level=2] [ref=e146]
+        - paragraph [ref=e147]: Built with Next.js and TypeScript, using server components for optimal performance. The dashboard connects to a PostgreSQL database via Drizzle ORM and uses Chart.js for visualizations.
