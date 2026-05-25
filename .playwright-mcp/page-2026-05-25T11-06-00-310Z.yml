@@ -1,0 +1,83 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "Kim Hwanhoon" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - navigation [ref=e5]:
+        - link "Portfolio" [ref=e6] [cursor=pointer]:
+          - /url: "#portfolio"
+        - link "About" [ref=e7] [cursor=pointer]:
+          - /url: "#about"
+        - link "Contact" [ref=e8] [cursor=pointer]:
+          - /url: "#contact"
+  - main [ref=e9]:
+    - generic [ref=e12]:
+      - generic [ref=e13]:
+        - paragraph [ref=e14]: Frontend Developer
+        - heading "Kim Hwanhoon" [level=1] [ref=e15]
+      - paragraph [ref=e16]: I craft web experiences that just work.
+      - generic [ref=e17]:
+        - link "Get in Touch" [ref=e18] [cursor=pointer]:
+          - /url: mailto:hello@example.com
+          - img
+          - text: Get in Touch
+        - link "LinkedIn" [ref=e19] [cursor=pointer]:
+          - /url: https://linkedin.com/in/
+          - img
+          - text: LinkedIn
+        - link "GitHub" [ref=e20] [cursor=pointer]:
+          - /url: https://github.com/
+          - img
+          - text: GitHub
+    - generic [ref=e23]:
+      - heading "Selected Work" [level=2] [ref=e24]
+      - paragraph [ref=e25]: No projects to show yet. Check back soon.
+    - generic [ref=e28]:
+      - generic [ref=e29]:
+        - heading "About" [level=2] [ref=e30]
+        - generic [ref=e31]:
+          - paragraph [ref=e32]: I'm a frontend developer who focuses on building clean, performant, and accessible web applications. I care deeply about user experience and believe that great interfaces should feel invisible.
+          - paragraph [ref=e33]: With experience across the full JavaScript ecosystem, I enjoy turning complex requirements into simple, elegant solutions. When I'm not coding, I'm exploring new tools and contributing to the developer community.
+      - generic [ref=e34]:
+        - heading "Skills & Technologies" [level=3] [ref=e35]
+        - generic [ref=e36]:
+          - generic [ref=e37]: React
+          - generic [ref=e38]: Next.js
+          - generic [ref=e39]: TypeScript
+          - generic [ref=e40]: Tailwind CSS
+          - generic [ref=e41]: Node.js
+          - generic [ref=e42]: PostgreSQL
+          - generic [ref=e43]: REST APIs
+          - generic [ref=e44]: Git
+    - generic [ref=e47]:
+      - heading "Let's Connect" [level=2] [ref=e48]
+      - paragraph [ref=e49]: I'm always open to new opportunities and interesting conversations. Feel free to reach out.
+      - generic [ref=e50]:
+        - link "Email Me" [ref=e51] [cursor=pointer]:
+          - /url: mailto:hello@example.com
+          - img
+          - text: Email Me
+        - link "LinkedIn" [ref=e52] [cursor=pointer]:
+          - /url: https://linkedin.com/in/
+          - img
+          - text: LinkedIn
+        - link "GitHub" [ref=e53] [cursor=pointer]:
+          - /url: https://github.com/
+          - img
+          - text: GitHub
+  - contentinfo [ref=e54]:
+    - generic [ref=e55]:
+      - paragraph [ref=e56]: © 2026 Kim Hwanhoon
+      - generic [ref=e57]:
+        - link "Email" [ref=e58] [cursor=pointer]:
+          - /url: mailto:hello@example.com
+          - img [ref=e59]
+        - link "LinkedIn" [ref=e62] [cursor=pointer]:
+          - /url: https://linkedin.com/in/
+          - img [ref=e63]
+        - link "GitHub" [ref=e66] [cursor=pointer]:
+          - /url: https://github.com/
+          - img [ref=e67]
+  - button "Open Next.js Dev Tools" [ref=e74] [cursor=pointer]:
+    - img [ref=e75]
+  - alert [ref=e78]

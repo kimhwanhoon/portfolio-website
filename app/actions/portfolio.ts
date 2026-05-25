@@ -42,6 +42,7 @@ export async function createPortfolio(data: unknown) {
   });
 
   revalidatePath("/admin");
+  revalidatePath("/");
   redirect("/admin");
 }
 
@@ -66,6 +67,7 @@ export async function updatePortfolio(id: string, data: unknown) {
     .where(eq(portfolioItems.id, id));
 
   revalidatePath("/admin");
+  revalidatePath("/");
   redirect("/admin");
 }
 
@@ -95,6 +97,7 @@ export async function deletePortfolio(id: string) {
   await db.delete(portfolioItems).where(eq(portfolioItems.id, id));
 
   revalidatePath("/admin");
+  revalidatePath("/");
 }
 
 export async function togglePortfolioStatus(id: string) {
@@ -114,4 +117,5 @@ export async function togglePortfolioStatus(id: string) {
     .where(eq(portfolioItems.id, id));
 
   revalidatePath("/admin");
+  revalidatePath("/");
 }

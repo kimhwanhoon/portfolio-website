@@ -1,0 +1,94 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "Admin CMS" [ref=e5] [cursor=pointer]:
+        - /url: /admin
+      - navigation [ref=e6]:
+        - link "Portfolio" [ref=e7] [cursor=pointer]:
+          - /url: /admin
+          - img [ref=e8]
+          - text: Portfolio
+        - link "New Item" [ref=e13] [cursor=pointer]:
+          - /url: /admin/portfolio/new
+          - img [ref=e14]
+          - text: New Item
+        - link "Images" [ref=e15] [cursor=pointer]:
+          - /url: /admin/images
+          - img [ref=e16]
+          - text: Images
+    - main [ref=e21]:
+      - generic [ref=e62]:
+        - generic [ref=e63]:
+          - heading "New Portfolio Item" [level=1] [ref=e64]
+          - paragraph [ref=e65]: Create a new portfolio item.
+        - generic [ref=e66]:
+          - generic [ref=e67]:
+            - generic [ref=e69]: Basic Information
+            - generic [ref=e70]:
+              - generic [ref=e71]:
+                - generic [ref=e72]: Title
+                - textbox "Title" [ref=e73]:
+                  - /placeholder: Project name
+                  - text: E-Commerce Dashboard
+              - generic [ref=e74]:
+                - generic [ref=e75]: Slug
+                - textbox "Slug" [ref=e76]:
+                  - /placeholder: project-name
+                  - text: e-commerce-dashboarde-commerce-dashboard
+              - generic [ref=e77]:
+                - generic [ref=e78]: Short Description
+                - textbox "Short Description" [ref=e79]:
+                  - /placeholder: Brief description for the card (max 300 chars)
+                  - text: A real-time analytics dashboard for e-commerce stores with live sales tracking and inventory management.
+              - generic [ref=e80]:
+                - generic [ref=e81]: Full Description (Markdown)
+                - textbox "Full Description (Markdown)" [ref=e82]:
+                  - /placeholder: Detailed project description. Supports Markdown.
+                  - text: "## Overview A comprehensive analytics dashboard built for e-commerce businesses. It provides **real-time insights** into sales performance, customer behavior, and inventory levels. ## Key Features - Live sales tracking with WebSocket updates - Interactive charts and data visualizations - Inventory management with low-stock alerts - Customer segmentation analytics - Mobile-responsive design ## Technical Highlights Built with Next.js and TypeScript, using server components for optimal performance. The dashboard connects to a PostgreSQL database via Drizzle ORM and uses Chart.js for visualizations."
+          - generic [ref=e83]:
+            - generic [ref=e85]: Tech & Links
+            - generic [ref=e86]:
+              - generic [ref=e87]:
+                - generic [ref=e88]: Tech Stack (comma-separated)
+                - textbox "Tech Stack (comma-separated)" [active] [ref=e89]:
+                  - /placeholder: React, TypeScript, Tailwind CSS
+                  - text: Next.js, TypeScript, Tailwind CSS, PostgreSQL, Drizzle ORM, Chart.js
+              - generic [ref=e90]:
+                - generic [ref=e91]:
+                  - generic [ref=e92]: Live URL
+                  - textbox "Live URL" [ref=e93]:
+                    - /placeholder: https://example.com
+                - generic [ref=e94]:
+                  - generic [ref=e95]: GitHub URL
+                  - textbox "GitHub URL" [ref=e96]:
+                    - /placeholder: https://github.com/...
+          - generic [ref=e97]:
+            - generic [ref=e99]: Settings
+            - generic [ref=e100]:
+              - generic [ref=e101]:
+                - generic [ref=e102]:
+                  - generic [ref=e103]: Sort Order
+                  - spinbutton "Sort Order" [ref=e104]: "0"
+                - generic [ref=e105]:
+                  - generic [ref=e106]: Status
+                  - combobox "Status" [ref=e107]:
+                    - option "Draft"
+                    - option "Published" [selected]
+              - generic [ref=e108]:
+                - switch "Featured project" [ref=e109]
+                - checkbox [ref=e110]
+                - generic [ref=e111]: Featured project
+              - generic [ref=e112]:
+                - generic [ref=e113]:
+                  - generic [ref=e114]: Start Date
+                  - textbox "Start Date" [ref=e115]
+                - generic [ref=e116]:
+                  - generic [ref=e117]: End Date
+                  - textbox "End Date" [ref=e118]
+          - generic [ref=e119]:
+            - button "Create Portfolio Item" [ref=e120] [cursor=pointer]
+            - link "Cancel" [ref=e121] [cursor=pointer]:
+              - /url: /admin
+  - button "Open Next.js Dev Tools" [ref=e57] [cursor=pointer]:
+    - img [ref=e58]
+  - alert [ref=e61]
