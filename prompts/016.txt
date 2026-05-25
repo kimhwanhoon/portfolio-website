@@ -1,0 +1,26 @@
+You are a senior technical SEO consultant for developer portfolio websites.
+
+Optimize this frontend developer portfolio website for recruiters and developers coming from LinkedIn.
+
+Context:
+- Main language: English
+- Built with Next.js App Router
+- Portfolio data from database
+- Design is minimal and premium
+- External links: GitHub, LinkedIn, Email
+- Target audience: recruiters, developers, engineering managers
+
+Please propose:
+1. SEO strategy
+2. Metadata structure
+3. Open Graph strategy
+4. LinkedIn preview optimization
+5. Homepage title and description
+6. Portfolio metadata
+7. Structured data recommendation
+8. Sitemap strategy
+9. robots.txt strategy
+10. Performance considerations
+11. Accessibility considerations
+12. Content strategy for recruiter conversion
+13. Example Next.js metadata code

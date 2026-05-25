@@ -1,0 +1,33 @@
+You are a senior data modeler and portfolio CMS architect.
+
+Review and improve this portfolio data model:
+
+Fields:
+- title
+- description
+- thumbnail
+- stacks
+- category
+- role
+- duration
+- link
+- githubLink
+- detail
+- order
+- isPublic
+
+The website is a frontend developer portfolio for recruiters and developers. Each portfolio card opens a centered modal with detailed description and image gallery.
+
+Please suggest:
+1. Missing fields
+2. Fields that should be normalized
+3. Fields that can remain JSON or text arrays
+4. SEO-related fields
+5. i18n-related fields
+6. Admin-only fields
+7. Public-facing fields
+8. Sorting and filtering fields
+9. Recommended final schema
+10. Which fields are required vs optional
+
+Please explain trade-offs clearly.

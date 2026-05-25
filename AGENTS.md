@@ -4,60 +4,53 @@
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
 <!-- END:nextjs-agent-rules -->
 
-You are a senior product strategist and UX architect.
+You are a senior full-stack engineer.
 
 I am building a frontend developer portfolio website.
 
 Tech stack:
 - Next.js 16.2.6 with App Router
+- TypeScript
 - Tailwind CSS
-- shadcn/ui as base UI
+- shadcn/ui
 - react-hook-form
 - zod
 - Neon Postgres
 - Drizzle ORM
-- Cloudflare R2 for image hosting
-- Clerk for authentication and admin access
-- i18n-ready architecture, but English only for MVP
+- Cloudflare R2
+- Clerk
+- i18n-ready, English only for MVP
 
-Website type:
-A multi-page frontend developer portfolio website. Portfolio items are stored in a database and displayed dynamically.
+Product:
+A multi-page frontend developer portfolio website. Portfolio items are stored in a database and displayed on the public site. Clicking a portfolio card opens a centered modal with detailed information and an image gallery. There is an admin CMS for managing portfolio items and images.
 
-Main audience:
-- Recruiters coming from LinkedIn
-- Developers
-- Engineering managers
-- Tech leads
+Audience:
+Recruiters, developers, and engineering managers coming from LinkedIn.
 
-Design tone:
+Design:
 Minimal, clean, premium, Airbnb-like.
 
-External links:
-- GitHub
-- LinkedIn
-- Email
+Important rules:
+- Use App Router conventions.
+- Prefer Server Components by default.
+- Use Client Components only where interactivity is required.
+- Use Server Actions for admin CRUD where appropriate.
+- Validate all mutations with zod.
+- Protect all admin routes and server actions with Clerk.
+- Use Drizzle for all database access.
+- Keep the code modular and production-ready.
+- Do not overengineer i18n for MVP, but keep the structure i18n-ready.
+- Explain trade-offs before implementing.
+- Ask only if a blocking decision is required.
+- Otherwise make a reasonable recommendation and proceed.
 
-Core pages:
-- Landing / home page
-- Portfolio listing section
-- Portfolio detail modal with image gallery
-- Admin auth pages using Clerk
-- Admin portfolio CRUD page
-- Image management page
+Current task:
+[INSERT ONE SPECIFIC TASK HERE]
 
-Please create a complete product plan for this website.
-
-Include:
-1. Product goal
-2. Target audience
-3. User journey
-4. Core value proposition
-5. Recommended sitemap
-6. Recommended additional pages
-7. MVP scope
-8. Post-MVP scope
-9. Content strategy
-10. UX principles
-11. Admin CMS requirements
-12. Risks and trade-offs
-13. Implementation priority
+Please output:
+1. Brief implementation plan
+2. Files to create or modify
+3. Code
+4. Explanation
+5. Testing steps
+6. Edge cases

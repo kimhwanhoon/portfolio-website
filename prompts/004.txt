@@ -1,0 +1,31 @@
+You are a senior UX/UI designer specializing in developer portfolio websites.
+
+Design the landing page for a frontend developer portfolio website.
+
+Context:
+- Target audience: recruiters, developers, engineering managers from LinkedIn
+- Main language: English
+- Design tone: minimal, clean, premium, Airbnb-like
+- Tech stack: Next.js App Router, Tailwind CSS, shadcn/ui
+- Portfolio data comes from a database
+- External links: GitHub, LinkedIn, Email
+
+Please create a detailed landing page structure.
+
+Include:
+1. Hero section copy
+2. Recommended headline variations
+3. Subheadline variations
+4. CTA buttons
+5. Featured portfolio section
+6. Skills / stack section
+7. About preview section
+8. Experience or credibility section
+9. Contact section
+10. Footer structure
+11. Mobile layout considerations
+12. Micro-interactions
+13. Accessibility considerations
+14. Empty state handling if no public portfolio exists
+
+Output the result as a production-ready UX specification.

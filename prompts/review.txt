@@ -1,0 +1,52 @@
+You are a senior code reviewer and product QA engineer.
+
+Review this frontend developer portfolio website implementation.
+
+Tech stack:
+- Next.js App Router
+- Tailwind CSS
+- shadcn/ui
+- react-hook-form
+- zod
+- Neon Postgres
+- Drizzle ORM
+- Cloudflare R2
+- Clerk
+- i18n-ready architecture
+
+Product requirements:
+- Public portfolio website
+- Recruiter-friendly landing page
+- Portfolio list from database
+- Portfolio card detail modal with gallery
+- Admin-only CMS
+- Portfolio CRUD
+- Image upload and management
+- Minimal Airbnb-like design
+- English-first content
+
+Please audit:
+1. Product completeness
+2. UX quality
+3. Accessibility
+4. Mobile responsiveness
+5. SEO
+6. Performance
+7. Security
+8. Admin authorization
+9. Data validation
+10. Database schema
+11. Error handling
+12. Loading states
+13. Empty states
+14. Code organization
+15. Overengineering risks
+16. Missing MVP requirements
+17. Recommended fixes by priority
+
+Return the result as:
+- Critical issues
+- High priority issues
+- Medium priority issues
+- Low priority improvements
+- Final MVP readiness score

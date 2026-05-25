@@ -1,0 +1,39 @@
+You are a senior product designer for admin dashboards.
+
+Design a minimal admin dashboard for a personal portfolio CMS.
+
+Tech stack:
+- Next.js App Router
+- Tailwind CSS
+- shadcn/ui
+- Clerk
+- Drizzle ORM
+- Neon Postgres
+- Cloudflare R2
+
+Admin users:
+- Only one admin
+
+Admin features:
+- Portfolio CRUD
+- Image management
+- Publish/unpublish portfolio items
+- Featured toggle
+- Reordering
+- Basic dashboard overview
+
+Please design:
+1. Admin dashboard layout
+2. Sidebar navigation
+3. Header actions
+4. Portfolio table
+5. Portfolio create/edit form
+6. Image library page
+7. Empty states
+8. Loading states
+9. Error states
+10. Confirmation dialogs
+11. Toast messages
+12. Mobile admin behavior
+13. Recommended shadcn/ui components
+14. Component breakdown

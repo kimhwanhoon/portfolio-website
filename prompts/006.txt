@@ -1,0 +1,37 @@
+You are a senior design system designer.
+
+Create a minimal, clean, Airbnb-inspired design system for a frontend developer portfolio website.
+
+Tech stack:
+- Tailwind CSS
+- shadcn/ui
+- Next.js App Router
+
+Design requirements:
+- Premium and minimal
+- Lots of whitespace
+- Soft borders
+- Subtle shadows
+- Rounded corners
+- Excellent mobile responsiveness
+- English-first typography
+- Recruiter-friendly clarity
+- Developer credibility
+
+Please define:
+1. Color palette
+2. Typography scale
+3. Spacing system
+4. Border radius rules
+5. Shadow rules
+6. Card design
+7. Button variants
+8. Badge styles
+9. Modal design
+10. Image gallery design
+11. Admin dashboard UI style
+12. Form design
+13. Error and empty states
+14. Dark mode recommendation
+15. Tailwind token suggestions
+16. shadcn/ui components to use

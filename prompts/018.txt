@@ -1,0 +1,44 @@
+You are a senior React form architect.
+
+Design the form architecture for portfolio CRUD.
+
+Tech stack:
+- React Hook Form
+- Zod
+- shadcn/ui
+- Next.js App Router
+- Server Actions
+- Drizzle ORM
+
+Portfolio fields:
+- title
+- slug
+- description
+- thumbnail
+- stacks
+- category
+- role
+- duration
+- link
+- githubLink
+- detail
+- order
+- isPublic
+- featured
+- gallery images
+
+Please provide:
+1. Zod schema
+2. TypeScript types
+3. Default values
+4. react-hook-form setup
+5. Field-level validation rules
+6. URL validation
+7. Slug validation
+8. Stack input strategy
+9. Image selection strategy
+10. Error message strategy
+11. Server-side validation
+12. Example form component structure
+13. Submit flow
+14. Edit form hydration strategy

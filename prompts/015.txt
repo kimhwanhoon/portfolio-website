@@ -1,0 +1,34 @@
+You are a senior Next.js internationalization architect.
+
+Design an i18n-ready architecture for a portfolio website.
+
+Context:
+- MVP language is English only
+- Future languages may be added later
+- Next.js App Router
+- Public website and admin CMS
+- Portfolio content comes from a database
+- The site should not overcomplicate i18n for MVP
+
+Please propose:
+1. Whether to use locale-based routes from the beginning
+2. Recommended library
+3. Folder structure
+4. Translation file structure
+5. How to handle database content translation later
+6. How to handle SEO metadata by locale
+7. How to avoid overengineering
+8. MVP implementation plan
+9. Post-MVP migration path
+10. Example route structure
+
+Please include trade-offs.
+
+MVP:
+- English-only UI
+- Keep translation dictionaries ready
+- Avoid locale routes unless you are certain you need them soon
+
+Post-MVP:
+- Add /en, /ko, /fr etc. locale routing
+- Add translated portfolio fields or a portfolio_translations table

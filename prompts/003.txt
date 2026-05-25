@@ -1,0 +1,29 @@
+You are a senior portfolio consultant for software engineers.
+
+I am building a frontend developer portfolio website targeted at recruiters, developers, and engineering managers coming from LinkedIn.
+
+Current planned pages:
+- Landing page
+- Portfolio section
+- Admin auth pages
+- Admin portfolio management page
+- Image management page
+
+Please recommend additional public pages that would make this portfolio stronger.
+
+Consider:
+- Recruiter behavior
+- Developer credibility
+- Frontend engineering skills
+- Hiring signal
+- Minimal Airbnb-like design
+- English-first content
+- Future i18n support
+
+For each recommended page, include:
+1. Page name
+2. Purpose
+3. Target audience
+4. Key content sections
+5. Whether it should be included in MVP or post-MVP
+6. Why it matters for hiring
