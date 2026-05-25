@@ -43,7 +43,7 @@
     "experienceHeading": "Experience",
     "timeline": {
       "0": {
-        "date": "Jan 2025 — Present",
+        "date": "Dec 2024 — Present",
         "title": "Frontend Engineer",
         "company": "GetVocal",
         "description": "Frontend engineer on an AI-powered voice & chat agent SaaS platform. Shipped 1,300+ commits and 200+ PRs across a React/TypeScript monorepo, owning core subsystems end-to-end — including a visual conversation designer, bundle versioning, webcall audio pipeline, and auth infrastructure. Led framework upgrades (React 19, Vite), performance refactors, and design system contributions."

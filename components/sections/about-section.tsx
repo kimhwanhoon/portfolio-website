@@ -7,18 +7,8 @@ import {
   StaggerItem,
 } from "@/components/motion/stagger-children";
 import { Badge } from "@/components/ui/badge";
+import { skills } from "@/lib/config/skills";
 import { SectionWrapper } from "./section-wrapper";
-
-const skills = [
-  "React",
-  "Next.js",
-  "TypeScript",
-  "Tailwind CSS",
-  "Node.js",
-  "PostgreSQL",
-  "REST APIs",
-  "Git",
-];
 
 interface AboutSectionProps {
   locale: string;

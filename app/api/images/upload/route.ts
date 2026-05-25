@@ -3,8 +3,14 @@ import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { auth } from "@clerk/nextjs/server";
 import { R2_BUCKET, R2_PUBLIC_URL, r2Client } from "@/lib/r2/client";
 
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
-const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+const ALLOWED_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+  "image/avif",
+];
+const MAX_SIZE = 50 * 1024 * 1024; // 50MB
 
 export async function POST(request: Request) {
   const { userId } = await auth();
@@ -21,7 +27,7 @@ export async function POST(request: Request) {
 
   if (!ALLOWED_TYPES.includes(file.type)) {
     return Response.json(
-      { error: "Invalid file type. Allowed: JPEG, PNG, WebP, GIF" },
+      { error: "Invalid file type. Allowed: JPEG, PNG, WebP, GIF, AVIF" },
       { status: 400 },
     );
   }
@@ -33,22 +39,28 @@ export async function POST(request: Request) {
     );
   }
 
-  const ext = file.name.split(".").pop() || "jpg";
-  const key = `portfolio/${randomUUID()}.${ext}`;
+  try {
+    const ext = file.name.split(".").pop() || "jpg";
+    const key = `portfolio/${randomUUID()}.${ext}`;
+    const buffer = Buffer.from(await file.arrayBuffer());
 
-  const buffer = Buffer.from(await file.arrayBuffer());
+    await r2Client.send(
+      new PutObjectCommand({
+        Bucket: R2_BUCKET,
+        Key: key,
+        Body: buffer,
+        ContentType: file.type,
+        CacheControl: "public, max-age=31536000, immutable",
+      }),
+    );
 
-  await r2Client.send(
-    new PutObjectCommand({
-      Bucket: R2_BUCKET,
-      Key: key,
-      Body: buffer,
-      ContentType: file.type,
-      CacheControl: "public, max-age=31536000, immutable",
-    }),
-  );
-
-  const url = `${R2_PUBLIC_URL}/${key}`;
-
-  return Response.json({ url, key, fileSize: file.size });
+    const url = `${R2_PUBLIC_URL}/${key}`;
+    return Response.json({ url, key, fileSize: file.size });
+  } catch (err) {
+    console.error("R2 upload failed:", err);
+    return Response.json(
+      { error: "Upload failed. Please try again." },
+      { status: 500 },
+    );
+  }
 }

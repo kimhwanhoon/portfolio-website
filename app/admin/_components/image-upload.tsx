@@ -25,12 +25,19 @@ export function ImageUpload() {
         body: formData,
       });
 
+      const text = await res.text();
+      let data: any;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        throw new Error(`Server error (${res.status}): ${text.slice(0, 200)}`);
+      }
+
       if (!res.ok) {
-        const data = await res.json();
         throw new Error(data.error || "Upload failed");
       }
 
-      const { url, fileSize } = await res.json();
+      const { url, fileSize } = data;
 
       // Get image dimensions
       const img = new Image();

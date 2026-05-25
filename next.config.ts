@@ -5,6 +5,9 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  experimental: {
+    proxyClientMaxBodySize: "50mb",
+  },
   images: {
     remotePatterns: [
       {

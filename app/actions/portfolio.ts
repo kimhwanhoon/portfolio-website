@@ -67,7 +67,11 @@ export async function createPortfolio(data: unknown) {
   redirect("/admin");
 }
 
-export async function updatePortfolio(id: string, data: unknown) {
+export async function updatePortfolio(
+  id: string,
+  data: unknown,
+  imageIds?: string[],
+) {
   await requireAdmin();
   const validated = portfolioSchema.parse(data);
 
@@ -116,6 +120,16 @@ export async function updatePortfolio(id: string, data: unknown) {
       shortDescription: validated.shortDescription,
       fullDescription: validated.fullDescription,
     });
+  }
+
+  // Assign images if provided
+  if (imageIds && imageIds.length > 0) {
+    for (let i = 0; i < imageIds.length; i++) {
+      await db
+        .update(images)
+        .set({ portfolioId: id, sortOrder: i })
+        .where(eq(images.id, imageIds[i]));
+    }
   }
 
   revalidateAll();

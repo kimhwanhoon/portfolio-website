@@ -3,7 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
-import { assignImagesToPortfolio } from "@/app/actions/images";
 import { createPortfolio, updatePortfolio } from "@/app/actions/portfolio";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -104,10 +103,7 @@ export function PortfolioForm({
   function onSubmit(data: PortfolioFormData) {
     startTransition(async () => {
       if (isEditing) {
-        await updatePortfolio(initialData.id, data);
-        if (selectedImageIds.length > 0) {
-          await assignImagesToPortfolio(selectedImageIds, initialData.id);
-        }
+        await updatePortfolio(initialData.id, data, selectedImageIds);
       } else {
         // For new items, images are assigned after creation via redirect
         await createPortfolio(data);

@@ -10,17 +10,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { SectionWrapper } from "@/components/sections/section-wrapper";
 import { Badge } from "@/components/ui/badge";
 import { routing } from "@/i18n/routing";
-
-const skills = [
-  "React",
-  "Next.js",
-  "TypeScript",
-  "Tailwind CSS",
-  "Node.js",
-  "PostgreSQL",
-  "REST APIs",
-  "Git",
-];
+import { skills } from "@/lib/config/skills";
 
 export async function generateMetadata({
   params,
