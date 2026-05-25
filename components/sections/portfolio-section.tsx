@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { FadeIn } from "@/components/motion/fade-in";
 import { PortfolioGrid } from "@/components/portfolio/portfolio-grid";
 import { SectionWrapper } from "./section-wrapper";
 
@@ -24,9 +25,11 @@ export async function PortfolioSection({
   return (
     <SectionWrapper id="portfolio">
       <div className="space-y-10">
-        <h2 className="font-heading text-2xl font-semibold tracking-tight">
-          {t("heading")}
-        </h2>
+        <FadeIn>
+          <h2 className="font-heading text-2xl font-semibold tracking-tight">
+            {t("heading")}
+          </h2>
+        </FadeIn>
         <PortfolioGrid items={items} locale={locale} />
       </div>
     </SectionWrapper>

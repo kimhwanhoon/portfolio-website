@@ -43,22 +43,22 @@
     "experienceHeading": "Experience",
     "timeline": {
       "0": {
-        "date": "2024 — Present",
-        "title": "Frontend Developer",
-        "company": "Company A",
-        "description": "Building and maintaining React-based web applications with a focus on performance, accessibility, and modern design systems."
+        "date": "Jan 2025 — Present",
+        "title": "Frontend Engineer",
+        "company": "GetVocal",
+        "description": "Frontend engineer on an AI-powered voice & chat agent SaaS platform. Shipped 1,300+ commits and 200+ PRs across a React/TypeScript monorepo, owning core subsystems end-to-end — including a visual conversation designer, bundle versioning, webcall audio pipeline, and auth infrastructure. Led framework upgrades (React 19, Vite), performance refactors, and design system contributions."
       },
       "1": {
-        "date": "2022 — 2024",
-        "title": "Junior Frontend Developer",
-        "company": "Company B",
-        "description": "Developed responsive web interfaces using Next.js and TypeScript. Collaborated with design and backend teams to deliver user-facing features."
+        "date": "May 2023 — Nov 2023",
+        "title": "Coding Bootcamp Graduate",
+        "company": "Team Sparta · Seoul, Korea",
+        "description": "Completed an intensive full-stack bootcamp covering HTML, CSS, JavaScript, React, Redux, and React Query. Built team projects with 5 collaborators. Self-learned Next.js App Router and foundational backend development after graduating."
       },
       "2": {
-        "date": "2021 — 2022",
-        "title": "Web Development Intern",
-        "company": "Company C",
-        "description": "Assisted in building and testing UI components. Gained hands-on experience with React, Tailwind CSS, and modern frontend tooling."
+        "date": "Aug 2019 — Aug 2022",
+        "title": "Travel Agent",
+        "company": "Sally Tour · Seoul, Korea",
+        "description": "Handled B2B & B2C tour sales, attracting overseas customers and producing tours. Managed homepage production, marketing, and automated websites using Wix and scripting tools."
       }
     },
     "backToHome": "Back to home"

@@ -4,15 +4,12 @@ import {
   IconMail,
 } from "@tabler/icons-react";
 import { getTranslations } from "next-intl/server";
+import { siteLinks } from "@/lib/config/links";
 
 const socialLinks = [
-  { href: "mailto:hello@example.com", icon: IconMail, label: "Email" },
-  {
-    href: "https://linkedin.com/in/",
-    icon: IconBrandLinkedin,
-    label: "LinkedIn",
-  },
-  { href: "https://github.com/", icon: IconBrandGithub, label: "GitHub" },
+  { href: siteLinks.email, icon: IconMail, label: "Email" },
+  { href: siteLinks.linkedin, icon: IconBrandLinkedin, label: "LinkedIn" },
+  { href: siteLinks.github, icon: IconBrandGithub, label: "GitHub" },
 ];
 
 export async function SiteFooter(): Promise<React.ReactElement> {

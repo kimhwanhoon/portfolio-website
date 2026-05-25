@@ -1,5 +1,6 @@
 "use client";
 
+import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -42,14 +43,25 @@ export function ImageGallery({ images, thumbnailUrl }: ImageGalleryProps) {
   return (
     <div className="space-y-3">
       <div className="relative aspect-video overflow-hidden rounded-lg bg-zinc-100">
-        <Image
-          src={current.url}
-          alt={current.alt || "Project screenshot"}
-          fill
-          className="object-contain"
-          sizes="(max-width: 768px) 100vw, 800px"
-          priority
-        />
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={current.id}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="absolute inset-0"
+          >
+            <Image
+              src={current.url}
+              alt={current.alt || "Project screenshot"}
+              fill
+              className="object-contain"
+              sizes="(max-width: 768px) 100vw, 800px"
+              priority
+            />
+          </motion.div>
+        </AnimatePresence>
       </div>
       {allImages.length > 1 && (
         <div className="flex gap-2 overflow-x-auto pb-1">

@@ -2,9 +2,11 @@
 
 import { useAuth } from "@clerk/nextjs";
 import { IconMenu2, IconSettings, IconX } from "@tabler/icons-react";
+import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
@@ -53,7 +55,7 @@ export function SiteHeader() {
         <button
           type="button"
           onClick={() => setOpen(!open)}
-          className="sm:hidden text-muted-foreground"
+          className={cn("text-muted-foreground sm:hidden")}
           aria-label={open ? t("closeMenu") : t("openMenu")}
         >
           {open ? (
@@ -64,32 +66,40 @@ export function SiteHeader() {
         </button>
       </div>
 
-      {open && (
-        <nav className="border-t bg-white px-6 py-4 sm:hidden">
-          <div className="flex flex-col gap-3">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={() => setOpen(false)}
-                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-              >
-                {link.label}
-              </a>
-            ))}
-            {isSignedIn && (
-              <Link
-                href="/admin"
-                onClick={() => setOpen(false)}
-                className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
-              >
-                <IconSettings className="size-3.5" />
-                Admin
-              </Link>
-            )}
-          </div>
-        </nav>
-      )}
+      <AnimatePresence>
+        {open && (
+          <motion.nav
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+            className="overflow-hidden border-t bg-white sm:hidden"
+          >
+            <div className="flex flex-col gap-3 px-6 py-4">
+              {navLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setOpen(false)}
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {link.label}
+                </a>
+              ))}
+              {isSignedIn && (
+                <Link
+                  href="/admin"
+                  onClick={() => setOpen(false)}
+                  className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <IconSettings className="size-3.5" />
+                  Admin
+                </Link>
+              )}
+            </div>
+          </motion.nav>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

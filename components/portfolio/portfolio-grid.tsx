@@ -1,4 +1,8 @@
 import { getTranslations } from "next-intl/server";
+import {
+  StaggerChildren,
+  StaggerItem,
+} from "@/components/motion/stagger-children";
 import { PortfolioCard } from "./portfolio-card";
 
 interface PortfolioItem {
@@ -24,10 +28,12 @@ export async function PortfolioGrid({ items, locale }: PortfolioGridProps) {
   }
 
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <StaggerChildren className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {items.map((item) => (
-        <PortfolioCard key={item.slug} {...item} locale={locale} />
+        <StaggerItem key={item.slug}>
+          <PortfolioCard {...item} locale={locale} />
+        </StaggerItem>
       ))}
-    </div>
+    </StaggerChildren>
   );
 }

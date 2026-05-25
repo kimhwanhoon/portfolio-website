@@ -1,0 +1,99 @@
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#main"
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - link "Kim Hwanhoon" [ref=e5] [cursor=pointer]:
+        - /url: /en
+      - navigation [ref=e6]:
+        - link "Portfolio" [ref=e7] [cursor=pointer]:
+          - /url: "#portfolio"
+        - link "About" [ref=e8] [cursor=pointer]:
+          - /url: /en/about
+        - link "Contact" [ref=e9] [cursor=pointer]:
+          - /url: "#contact"
+  - main [ref=e10]:
+    - generic [ref=e13]:
+      - generic [ref=e15]:
+        - paragraph [ref=e16]: Frontend Developer
+        - heading "Kim Hwanhoon" [level=1] [ref=e17]
+      - paragraph [ref=e19]: I craft web experiences that just work.
+      - generic [ref=e21]:
+        - link "Get in Touch" [ref=e22] [cursor=pointer]:
+          - /url: mailto:hello@example.com
+          - img
+          - text: Get in Touch
+        - link "LinkedIn" [ref=e23] [cursor=pointer]:
+          - /url: https://linkedin.com/in/
+          - img
+          - text: LinkedIn
+        - link "GitHub" [ref=e24] [cursor=pointer]:
+          - /url: https://github.com/
+          - img
+          - text: GitHub
+    - generic [ref=e27]:
+      - heading "Selected Work" [level=2] [ref=e29]
+      - link "No image E-Commerce Dashboard A real-time analytics dashboard for e-commerce stores with live sales tracking and inventory management. Next.js TypeScript Tailwind CSS +3" [ref=e33] [cursor=pointer]:
+        - /url: /en/portfolio/e-commerce-dashboard
+        - generic [ref=e35]: No image
+        - generic [ref=e36]:
+          - heading "E-Commerce Dashboard" [level=3] [ref=e37]
+          - paragraph [ref=e38]: A real-time analytics dashboard for e-commerce stores with live sales tracking and inventory management.
+          - generic [ref=e39]:
+            - generic [ref=e40]: Next.js
+            - generic [ref=e41]: TypeScript
+            - generic [ref=e42]: Tailwind CSS
+            - generic [ref=e43]: "+3"
+    - generic [ref=e46]:
+      - generic [ref=e48]:
+        - heading "About" [level=2] [ref=e49]
+        - generic [ref=e50]:
+          - paragraph [ref=e51]: I'm a frontend developer who focuses on building clean, performant, and accessible web applications. I care deeply about user experience and believe that great interfaces should feel invisible.
+          - paragraph [ref=e52]: With experience across the full JavaScript ecosystem, I enjoy turning complex requirements into simple, elegant solutions. When I'm not coding, I'm exploring new tools and contributing to the developer community.
+        - link "Learn more about me" [ref=e53] [cursor=pointer]:
+          - /url: /en/about
+          - text: Learn more about me
+          - img [ref=e54]
+      - generic [ref=e58]:
+        - heading "Skills & Technologies" [level=3] [ref=e59]
+        - generic [ref=e60]:
+          - generic [ref=e62]: React
+          - generic [ref=e64]: Next.js
+          - generic [ref=e66]: TypeScript
+          - generic [ref=e68]: Tailwind CSS
+          - generic [ref=e70]: Node.js
+          - generic [ref=e72]: PostgreSQL
+          - generic [ref=e74]: REST APIs
+          - generic [ref=e76]: Git
+    - generic [ref=e80]:
+      - heading "Let's Connect" [level=2] [ref=e81]
+      - paragraph [ref=e82]: I'm always open to new opportunities and interesting conversations. Feel free to reach out.
+      - generic [ref=e83]:
+        - link "Email Me" [ref=e84] [cursor=pointer]:
+          - /url: mailto:hello@example.com
+          - img
+          - text: Email Me
+        - link "LinkedIn" [ref=e85] [cursor=pointer]:
+          - /url: https://linkedin.com/in/
+          - img
+          - text: LinkedIn
+        - link "GitHub" [ref=e86] [cursor=pointer]:
+          - /url: https://github.com/
+          - img
+          - text: GitHub
+  - contentinfo [ref=e87]:
+    - generic [ref=e88]:
+      - paragraph [ref=e89]: © 2026 Kim Hwanhoon
+      - generic [ref=e90]:
+        - link "Email" [ref=e91] [cursor=pointer]:
+          - /url: mailto:hello@example.com
+          - img [ref=e92]
+        - link "LinkedIn" [ref=e95] [cursor=pointer]:
+          - /url: https://linkedin.com/in/
+          - img [ref=e96]
+        - link "GitHub" [ref=e99] [cursor=pointer]:
+          - /url: https://github.com/
+          - img [ref=e100]
+  - button "Open Next.js Dev Tools" [ref=e107] [cursor=pointer]:
+    - img [ref=e108]
+  - alert [ref=e111]
