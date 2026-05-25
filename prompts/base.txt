@@ -1,0 +1,36 @@
+웹사이트를 만드는 계획을 짜려고 한다. 다음을 보고 claude에게 줄 만한 프롬프트 목록을 체계적으로 완성한다. (여러번에 걸쳐서 ai를 이용하여 만들 예정)
+
+스택 목록
+매인: next.js 최신버전 app router
+Css: tailwind, shadcn base ui
+Form: react-hook-form
+Validation: zod
+DB: neon postgres
+DB adapter: drizzle
+Image hosting: Cloudflare R2
+Auth: clerk (admin 구분용)
+Global: i18n (일단은 영어만 사용)
+
+어떠한 웹사이트?
+여러 페이지로 구성된 프론트엔드 개발자 포트폴리오 웹사이트로 db에 포트폴리오 목록을 연동하여 보여준다. 메인 언어는 영어다.
+
+페이지 종류
+– 랜딩(메인) 페이지
+– 어드민용 auth관련 페이지(mvp: clerk 사용)
+– Admin이 포트폴리오 목록 관리를 위한 페이지 (사진 호스팅 가능)
+– 추가 페이지 추천해주세요.
+
+상세 사항
+- 포트폴리오의 주 타깃은 linkedin에서 오는 채용 담당자 및 개발자 들이다.
+- 사이트 언어: 영어/ 다국어 지원 예정(i18n 사용 권장)
+- 디자인 톤: airbnb처럼 미니멀하고 깔끔한 디자인
+- 외부 링크는 github, linkedin, email 정도로 한다.
+
+포트폴리오 데이터 관련
+- 필드: title, description, thumbnail, stacks, category, role, duration, link, githublink, detail, order, is_public 등등
+- 포트폴리오 카드 목록이 나오고, 그 카드를 클릭하면 모달이 중앙에 열려서 상세 설명을 보여주려고 한다. (사진 갤러리 포함)
+
+관리자 관련
+- admin은 본인 한 명이다.
+- admin 구분은 clerk의 이메일 allowlist로 하면 되겠다.
+- admin 관리 대상: 포트폴리오 CRUD, 이미지 관리 등
