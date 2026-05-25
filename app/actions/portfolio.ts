@@ -1,14 +1,14 @@
 "use server";
 
+import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { auth } from "@clerk/nextjs/server";
-import { db } from "@/lib/db";
-import { portfolioItems, images } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { db } from "@/lib/db";
+import { images, portfolioItems, portfolioTranslations } from "@/lib/db/schema";
+import { R2_BUCKET, r2Client } from "@/lib/r2/client";
 import { portfolioSchema } from "@/lib/validators/portfolio";
-import { DeleteObjectCommand } from "@aws-sdk/client-s3";
-import { r2Client, R2_BUCKET } from "@/lib/r2/client";
 
 async function requireAdmin() {
   const { userId } = await auth();
@@ -25,24 +25,45 @@ function slugify(text: string): string {
     .trim();
 }
 
+function revalidateAll() {
+  revalidatePath("/admin");
+  revalidatePath("/en");
+  revalidatePath("/");
+}
+
 export async function createPortfolio(data: unknown) {
   await requireAdmin();
   const validated = portfolioSchema.parse(data);
 
   const slug = validated.slug || slugify(validated.title);
 
-  await db.insert(portfolioItems).values({
-    ...validated,
-    slug,
-    thumbnailUrl: validated.thumbnailUrl || null,
-    liveUrl: validated.liveUrl || null,
-    githubUrl: validated.githubUrl || null,
-    startDate: validated.startDate ?? null,
-    endDate: validated.endDate ?? null,
+  // Insert base item (language-agnostic fields)
+  const [inserted] = await db
+    .insert(portfolioItems)
+    .values({
+      slug,
+      thumbnailUrl: validated.thumbnailUrl || null,
+      techStack: validated.techStack,
+      liveUrl: validated.liveUrl || null,
+      githubUrl: validated.githubUrl || null,
+      featured: validated.featured,
+      sortOrder: validated.sortOrder,
+      status: validated.status,
+      startDate: validated.startDate ?? null,
+      endDate: validated.endDate ?? null,
+    })
+    .returning({ id: portfolioItems.id });
+
+  // Insert English translation
+  await db.insert(portfolioTranslations).values({
+    portfolioId: inserted.id,
+    locale: "en",
+    title: validated.title,
+    shortDescription: validated.shortDescription,
+    fullDescription: validated.fullDescription,
   });
 
-  revalidatePath("/admin");
-  revalidatePath("/");
+  revalidateAll();
   redirect("/admin");
 }
 
@@ -52,52 +73,78 @@ export async function updatePortfolio(id: string, data: unknown) {
 
   const slug = validated.slug || slugify(validated.title);
 
+  // Update base item
   await db
     .update(portfolioItems)
     .set({
-      ...validated,
       slug,
       thumbnailUrl: validated.thumbnailUrl || null,
+      techStack: validated.techStack,
       liveUrl: validated.liveUrl || null,
       githubUrl: validated.githubUrl || null,
+      featured: validated.featured,
+      sortOrder: validated.sortOrder,
+      status: validated.status,
       startDate: validated.startDate ?? null,
       endDate: validated.endDate ?? null,
       updatedAt: new Date(),
     })
     .where(eq(portfolioItems.id, id));
 
-  revalidatePath("/admin");
-  revalidatePath("/");
+  // Upsert English translation
+  const existing = await db
+    .select()
+    .from(portfolioTranslations)
+    .where(eq(portfolioTranslations.portfolioId, id))
+    .limit(1);
+
+  if (existing.length > 0) {
+    await db
+      .update(portfolioTranslations)
+      .set({
+        title: validated.title,
+        shortDescription: validated.shortDescription,
+        fullDescription: validated.fullDescription,
+        updatedAt: new Date(),
+      })
+      .where(eq(portfolioTranslations.portfolioId, id));
+  } else {
+    await db.insert(portfolioTranslations).values({
+      portfolioId: id,
+      locale: "en",
+      title: validated.title,
+      shortDescription: validated.shortDescription,
+      fullDescription: validated.fullDescription,
+    });
+  }
+
+  revalidateAll();
   redirect("/admin");
 }
 
 export async function deletePortfolio(id: string) {
   await requireAdmin();
 
-  // Find all images to delete from R2
   const itemImages = await db
     .select()
     .from(images)
     .where(eq(images.portfolioId, id));
 
-  // Delete images from R2
   for (const image of itemImages) {
     try {
       const key = new URL(image.url).pathname.slice(1);
       await r2Client.send(
-        new DeleteObjectCommand({ Bucket: R2_BUCKET, Key: key })
+        new DeleteObjectCommand({ Bucket: R2_BUCKET, Key: key }),
       );
     } catch {
-      // Log but don't fail the whole operation for R2 cleanup issues
       console.error(`Failed to delete R2 object for image ${image.id}`);
     }
   }
 
-  // DB cascade handles image record deletion
+  // Cascade deletes translations and image records
   await db.delete(portfolioItems).where(eq(portfolioItems.id, id));
 
-  revalidatePath("/admin");
-  revalidatePath("/");
+  revalidateAll();
 }
 
 export async function togglePortfolioStatus(id: string) {
@@ -116,6 +163,5 @@ export async function togglePortfolioStatus(id: string) {
     })
     .where(eq(portfolioItems.id, id));
 
-  revalidatePath("/admin");
-  revalidatePath("/");
+  revalidateAll();
 }

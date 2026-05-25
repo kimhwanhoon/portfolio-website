@@ -1,7 +1,8 @@
+import { desc } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
-import { portfolioItems, images } from "@/lib/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { images } from "@/lib/db/schema";
+import { getPortfolioItemForEdit } from "@/lib/queries/portfolio";
 import { PortfolioForm } from "../../../_components/portfolio-form";
 
 export default async function EditPortfolioPage({
@@ -11,18 +12,14 @@ export default async function EditPortfolioPage({
 }) {
   const { id } = await params;
 
-  const item = await db.query.portfolioItems.findFirst({
-    where: eq(portfolioItems.id, id),
-  });
-
+  const item = await getPortfolioItemForEdit(id);
   if (!item) notFound();
 
-  // Fetch all images and the ones assigned to this portfolio item
   const allImages = await db
     .select({
       id: images.id,
       url: images.url,
-      alt: images.alt,
+      alt: images.id, // placeholder — alt is in translations now
       width: images.width,
       height: images.height,
       portfolioId: images.portfolioId,
@@ -33,6 +30,15 @@ export default async function EditPortfolioPage({
   const assignedImageIds = allImages
     .filter((img) => img.portfolioId === id)
     .map((img) => img.id);
+
+  // Map to the shape the form expects
+  const formImages = allImages.map((img) => ({
+    id: img.id,
+    url: img.url,
+    alt: null as string | null,
+    width: img.width,
+    height: img.height,
+  }));
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
@@ -46,7 +52,7 @@ export default async function EditPortfolioPage({
       </div>
       <PortfolioForm
         initialData={item}
-        allImages={allImages}
+        allImages={formImages}
         initialImageIds={assignedImageIds}
       />
     </div>

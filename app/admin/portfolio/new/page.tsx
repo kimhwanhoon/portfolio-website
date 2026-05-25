@@ -7,9 +7,7 @@ export default function NewPortfolioPage() {
         <h1 className="text-2xl font-semibold tracking-tight">
           New Portfolio Item
         </h1>
-        <p className="text-sm text-zinc-500">
-          Create a new portfolio item.
-        </p>
+        <p className="text-sm text-zinc-500">Create a new portfolio item.</p>
       </div>
       <PortfolioForm />
     </div>

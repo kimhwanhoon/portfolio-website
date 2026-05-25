@@ -1,0 +1,84 @@
+{
+  "meta": {
+    "title": "Kim Hwanhoon | Frontend Developer",
+    "titleTemplate": "{title} | Kim Hwanhoon",
+    "description": "Frontend developer portfolio — I craft web experiences that just work."
+  },
+  "nav": {
+    "portfolio": "Portfolio",
+    "about": "About",
+    "contact": "Contact",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "hero": {
+    "label": "Frontend Developer",
+    "name": "Kim Hwanhoon",
+    "tagline": "I craft web experiences that just work.",
+    "cta": "Get in Touch",
+    "linkedin": "LinkedIn",
+    "github": "GitHub"
+  },
+  "portfolio": {
+    "heading": "Selected Work",
+    "empty": "No projects to show yet. Check back soon.",
+    "noImage": "No image"
+  },
+  "about": {
+    "heading": "About",
+    "bio": {
+      "0": "I'm a frontend developer who focuses on building clean, performant, and accessible web applications. I care deeply about user experience and believe that great interfaces should feel invisible.",
+      "1": "With experience across the full JavaScript ecosystem, I enjoy turning complex requirements into simple, elegant solutions. When I'm not coding, I'm exploring new tools and contributing to the developer community."
+    },
+    "skillsHeading": "Skills & Technologies",
+    "learnMore": "Learn more about me"
+  },
+  "aboutPage": {
+    "title": "About",
+    "extendedBio": {
+      "0": "I'm a frontend developer who focuses on building clean, performant, and accessible web applications. I care deeply about user experience and believe that great interfaces should feel invisible.",
+      "1": "With experience across the full JavaScript ecosystem, I enjoy turning complex requirements into simple, elegant solutions. I'm most productive when working at the intersection of design and engineering — translating ideas into polished, production-ready interfaces.",
+      "2": "When I'm not coding, I'm exploring new tools, contributing to the developer community, and staying curious about what's next in the web platform."
+    },
+    "experienceHeading": "Experience",
+    "timeline": {
+      "0": {
+        "date": "2024 — Present",
+        "title": "Frontend Developer",
+        "company": "Company A",
+        "description": "Building and maintaining React-based web applications with a focus on performance, accessibility, and modern design systems."
+      },
+      "1": {
+        "date": "2022 — 2024",
+        "title": "Junior Frontend Developer",
+        "company": "Company B",
+        "description": "Developed responsive web interfaces using Next.js and TypeScript. Collaborated with design and backend teams to deliver user-facing features."
+      },
+      "2": {
+        "date": "2021 — 2022",
+        "title": "Web Development Intern",
+        "company": "Company C",
+        "description": "Assisted in building and testing UI components. Gained hands-on experience with React, Tailwind CSS, and modern frontend tooling."
+      }
+    },
+    "backToHome": "Back to home"
+  },
+  "contact": {
+    "heading": "Let's Connect",
+    "description": "I'm always open to new opportunities and interesting conversations. Feel free to reach out.",
+    "email": "Email Me",
+    "linkedin": "LinkedIn",
+    "github": "GitHub"
+  },
+  "footer": {
+    "copyright": "© {year} Kim Hwanhoon"
+  },
+  "detail": {
+    "backToPortfolio": "Back to portfolio",
+    "liveSite": "Live Site",
+    "sourceCode": "Source Code"
+  },
+  "common": {
+    "skipToContent": "Skip to content"
+  }
+}

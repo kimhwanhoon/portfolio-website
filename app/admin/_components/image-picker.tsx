@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { IconCheck, IconPhoto, IconStar, IconX } from "@tabler/icons-react";
 import Image from "next/image";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,7 +11,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { IconPhoto, IconCheck, IconX, IconStar } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 
 interface ImageItem {
@@ -41,7 +41,7 @@ export function ImagePicker({
 
   function toggleImage(id: string) {
     setLocalSelection((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
     );
   }
 
@@ -51,7 +51,7 @@ export function ImagePicker({
   }
 
   const selectedImages = allImages.filter((img) =>
-    selectedIds.includes(img.id)
+    selectedIds.includes(img.id),
   );
 
   return (
@@ -92,7 +92,7 @@ export function ImagePicker({
                         "relative aspect-video overflow-hidden rounded-md border-2 transition-colors",
                         isSelected
                           ? "border-primary"
-                          : "border-transparent hover:border-zinc-300"
+                          : "border-transparent hover:border-zinc-300",
                       )}
                     >
                       <Image
@@ -150,7 +150,7 @@ export function ImagePicker({
                     "rounded-full p-0.5",
                     thumbnailUrl === img.url
                       ? "bg-yellow-400 text-white"
-                      : "bg-white/80 text-zinc-600 hover:bg-yellow-400 hover:text-white"
+                      : "bg-white/80 text-zinc-600 hover:bg-yellow-400 hover:text-white",
                   )}
                   title="Set as thumbnail"
                 >
@@ -159,9 +159,7 @@ export function ImagePicker({
                 <button
                   type="button"
                   onClick={() =>
-                    onSelectionChange(
-                      selectedIds.filter((id) => id !== img.id)
-                    )
+                    onSelectionChange(selectedIds.filter((id) => id !== img.id))
                   }
                   className="rounded-full bg-white/80 p-0.5 text-zinc-600 hover:bg-red-500 hover:text-white"
                   title="Remove from gallery"

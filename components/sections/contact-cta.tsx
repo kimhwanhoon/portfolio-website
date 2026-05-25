@@ -1,21 +1,23 @@
-import { SectionWrapper } from "./section-wrapper";
-import { buttonVariants } from "@/components/ui/button";
 import {
-  IconMail,
-  IconBrandLinkedin,
   IconBrandGithub,
+  IconBrandLinkedin,
+  IconMail,
 } from "@tabler/icons-react";
+import { getTranslations } from "next-intl/server";
+import { buttonVariants } from "@/components/ui/button";
+import { SectionWrapper } from "./section-wrapper";
 
-export function ContactCTA() {
+export async function ContactCTA() {
+  const t = await getTranslations("contact");
+
   return (
     <SectionWrapper id="contact">
-      <div className="text-center space-y-6">
+      <div className="space-y-6 text-center">
         <h2 className="font-heading text-2xl font-semibold tracking-tight">
-          Let&apos;s Connect
+          {t("heading")}
         </h2>
         <p className="mx-auto max-w-md text-muted-foreground leading-relaxed">
-          I&apos;m always open to new opportunities and interesting
-          conversations. Feel free to reach out.
+          {t("description")}
         </p>
         <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
           <a
@@ -23,7 +25,7 @@ export function ContactCTA() {
             className={buttonVariants({ size: "lg" })}
           >
             <IconMail className="size-4" />
-            Email Me
+            {t("email")}
           </a>
           <a
             href="https://linkedin.com/in/"
@@ -32,7 +34,7 @@ export function ContactCTA() {
             className={buttonVariants({ variant: "outline", size: "lg" })}
           >
             <IconBrandLinkedin className="size-4" />
-            LinkedIn
+            {t("linkedin")}
           </a>
           <a
             href="https://github.com/"
@@ -41,7 +43,7 @@ export function ContactCTA() {
             className={buttonVariants({ variant: "outline", size: "lg" })}
           >
             <IconBrandGithub className="size-4" />
-            GitHub
+            {t("github")}
           </a>
         </div>
       </div>

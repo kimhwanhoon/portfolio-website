@@ -1,11 +1,12 @@
 "use client";
 
-import { useCallback, useState, useTransition } from "react";
-import { Button } from "@/components/ui/button";
+import { IconLoader2, IconUpload } from "@tabler/icons-react";
+import { useCallback, useRef, useState, useTransition } from "react";
 import { saveImageRecord } from "@/app/actions/images";
-import { IconUpload, IconLoader2 } from "@tabler/icons-react";
+import { Button } from "@/components/ui/button";
 
 export function ImageUpload() {
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -59,7 +60,7 @@ export function ImageUpload() {
     // Upload files sequentially to avoid overwhelming the server
     Array.from(files).reduce(
       (chain, file) => chain.then(() => uploadFile(file)),
-      Promise.resolve()
+      Promise.resolve(),
     );
   }
 
@@ -95,11 +96,11 @@ export function ImageUpload() {
             : "Drag and drop images here, or click to browse"}
         </p>
         <input
+          ref={fileInputRef}
           type="file"
           accept="image/jpeg,image/png,image/webp,image/gif"
           multiple
           className="hidden"
-          id="image-upload"
           onChange={(e) => handleFiles(e.target.files)}
           disabled={uploading}
         />
@@ -109,7 +110,7 @@ export function ImageUpload() {
           size="sm"
           className="mt-3"
           disabled={uploading}
-          onClick={() => document.getElementById("image-upload")?.click()}
+          onClick={() => fileInputRef.current?.click()}
         >
           Browse Files
         </Button>

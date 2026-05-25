@@ -1,20 +1,20 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  portfolioSchema,
-  type PortfolioFormData,
-} from "@/lib/validators/portfolio";
-import { createPortfolio, updatePortfolio } from "@/app/actions/portfolio";
 import { assignImagesToPortfolio } from "@/app/actions/images";
+import { createPortfolio, updatePortfolio } from "@/app/actions/portfolio";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  type PortfolioFormData,
+  portfolioSchema,
+} from "@/lib/validators/portfolio";
 import { ImagePicker } from "./image-picker";
 
 interface AvailableImage {
@@ -137,11 +137,7 @@ export function PortfolioForm({
 
           <div className="space-y-2">
             <Label htmlFor="slug">Slug</Label>
-            <Input
-              id="slug"
-              placeholder="project-name"
-              {...register("slug")}
-            />
+            <Input id="slug" placeholder="project-name" {...register("slug")} />
             {errors.slug && (
               <p className="text-sm text-red-500">{errors.slug.message}</p>
             )}
@@ -209,9 +205,7 @@ export function PortfolioForm({
                 {...register("liveUrl")}
               />
               {errors.liveUrl && (
-                <p className="text-sm text-red-500">
-                  {errors.liveUrl.message}
-                </p>
+                <p className="text-sm text-red-500">{errors.liveUrl.message}</p>
               )}
             </div>
             <div className="space-y-2">
@@ -301,7 +295,7 @@ export function PortfolioForm({
                 onChange={(e) =>
                   setValue(
                     "startDate",
-                    e.target.value ? new Date(e.target.value) : null
+                    e.target.value ? new Date(e.target.value) : null,
                   )
                 }
               />
@@ -319,7 +313,7 @@ export function PortfolioForm({
                 onChange={(e) =>
                   setValue(
                     "endDate",
-                    e.target.value ? new Date(e.target.value) : null
+                    e.target.value ? new Date(e.target.value) : null,
                   )
                 }
               />

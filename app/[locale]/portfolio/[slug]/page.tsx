@@ -1,22 +1,24 @@
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { SiteHeader } from "@/components/layout/site-header";
-import { SiteFooter } from "@/components/layout/site-footer";
-import { PortfolioDetail } from "@/components/portfolio/portfolio-detail";
-import {
-  getPortfolioBySlug,
-  getAllPublishedSlugs,
-} from "@/lib/queries/portfolio";
-import Link from "next/link";
 import { IconArrowLeft } from "@tabler/icons-react";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { SiteFooter } from "@/components/layout/site-footer";
+import { SiteHeader } from "@/components/layout/site-header";
+import { PortfolioDetail } from "@/components/portfolio/portfolio-detail";
+import type { Locale } from "@/i18n/routing";
+import {
+  getAllPublishedSlugs,
+  getPortfolioBySlug,
+} from "@/lib/queries/portfolio";
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
-  const item = await getPortfolioBySlug(slug);
+  const { locale, slug } = await params;
+  const item = await getPortfolioBySlug(slug, locale as Locale);
   if (!item) return {};
 
   return {
@@ -37,10 +39,13 @@ export async function generateStaticParams() {
 export default async function PortfolioPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }) {
-  const { slug } = await params;
-  const item = await getPortfolioBySlug(slug);
+  const { locale, slug } = await params;
+  setRequestLocale(locale);
+
+  const t = await getTranslations("detail");
+  const item = await getPortfolioBySlug(slug, locale as Locale);
   if (!item) notFound();
 
   return (
@@ -48,11 +53,11 @@ export default async function PortfolioPage({
       <SiteHeader />
       <main className="mx-auto max-w-3xl px-6 py-12">
         <Link
-          href="/#portfolio"
+          href={`/${locale}/#portfolio`}
           className="mb-8 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
           <IconArrowLeft className="size-4" />
-          Back to portfolio
+          {t("backToPortfolio")}
         </Link>
         <PortfolioDetail item={item} />
       </main>

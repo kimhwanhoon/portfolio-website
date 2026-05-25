@@ -1,0 +1,61 @@
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#main"
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - link "Kim Hwanhoon" [ref=e5] [cursor=pointer]:
+        - /url: /en
+      - navigation [ref=e6]:
+        - link "Portfolio" [ref=e7] [cursor=pointer]:
+          - /url: "#portfolio"
+        - link "About" [ref=e8] [cursor=pointer]:
+          - /url: "#about"
+        - link "Contact" [ref=e9] [cursor=pointer]:
+          - /url: "#contact"
+  - main [ref=e10]:
+    - link "Back to portfolio" [ref=e11] [cursor=pointer]:
+      - /url: /en#portfolio
+      - img [ref=e12]
+      - text: Back to portfolio
+    - generic [ref=e15]:
+      - generic [ref=e16]:
+        - heading "E-Commerce Dashboard" [level=1] [ref=e18]
+        - generic [ref=e19]:
+          - generic [ref=e20]: Next.js
+          - generic [ref=e21]: TypeScript
+          - generic [ref=e22]: Tailwind CSS
+          - generic [ref=e23]: PostgreSQL
+          - generic [ref=e24]: Drizzle ORM
+          - generic [ref=e25]: Chart.js
+      - separator [ref=e26]
+      - generic [ref=e27]:
+        - heading "Overview" [level=2] [ref=e28]
+        - paragraph [ref=e29]:
+          - text: A comprehensive analytics dashboard built for e-commerce businesses. It provides
+          - strong [ref=e30]: real-time insights
+          - text: into sales performance, customer behavior, and inventory levels.
+        - heading "Key Features" [level=2] [ref=e31]
+        - list [ref=e32]:
+          - listitem [ref=e33]: Live sales tracking with WebSocket updates
+          - listitem [ref=e34]: Interactive charts and data visualizations
+          - listitem [ref=e35]: Inventory management with low-stock alerts
+          - listitem [ref=e36]: Customer segmentation analytics
+          - listitem [ref=e37]: Mobile-responsive design
+        - heading "Technical Highlights" [level=2] [ref=e38]
+        - paragraph [ref=e39]: Built with Next.js and TypeScript, using server components for optimal performance. The dashboard connects to a PostgreSQL database via Drizzle ORM and uses Chart.js for visualizations.
+  - contentinfo [ref=e40]:
+    - generic [ref=e41]:
+      - paragraph [ref=e42]: © 2026 Kim Hwanhoon
+      - generic [ref=e43]:
+        - link "Email" [ref=e44] [cursor=pointer]:
+          - /url: mailto:hello@example.com
+          - img [ref=e45]
+        - link "LinkedIn" [ref=e48] [cursor=pointer]:
+          - /url: https://linkedin.com/in/
+          - img [ref=e49]
+        - link "GitHub" [ref=e52] [cursor=pointer]:
+          - /url: https://github.com/
+          - img [ref=e53]
+  - button "Open Next.js Dev Tools" [ref=e60] [cursor=pointer]:
+    - img [ref=e61]
+  - alert [ref=e64]

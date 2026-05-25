@@ -1,14 +1,9 @@
-import { auth } from "@clerk/nextjs/server";
+import { randomUUID } from "node:crypto";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
-import { r2Client, R2_BUCKET, R2_PUBLIC_URL } from "@/lib/r2/client";
-import { randomUUID } from "crypto";
+import { auth } from "@clerk/nextjs/server";
+import { R2_BUCKET, R2_PUBLIC_URL, r2Client } from "@/lib/r2/client";
 
-const ALLOWED_TYPES = [
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-  "image/gif",
-];
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const MAX_SIZE = 10 * 1024 * 1024; // 10MB
 
 export async function POST(request: Request) {
@@ -27,14 +22,14 @@ export async function POST(request: Request) {
   if (!ALLOWED_TYPES.includes(file.type)) {
     return Response.json(
       { error: "Invalid file type. Allowed: JPEG, PNG, WebP, GIF" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   if (file.size > MAX_SIZE) {
     return Response.json(
       { error: "File too large. Maximum size: 10MB" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -50,7 +45,7 @@ export async function POST(request: Request) {
       Body: buffer,
       ContentType: file.type,
       CacheControl: "public, max-age=31536000, immutable",
-    })
+    }),
   );
 
   const url = `${R2_PUBLIC_URL}/${key}`;

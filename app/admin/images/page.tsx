@@ -1,8 +1,8 @@
+import { desc } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { images } from "@/lib/db/schema";
-import { desc } from "drizzle-orm";
-import { ImageUpload } from "../_components/image-upload";
 import { ImageGrid } from "../_components/image-grid";
+import { ImageUpload } from "../_components/image-upload";
 
 export default async function ImagesPage() {
   const allImages = await db

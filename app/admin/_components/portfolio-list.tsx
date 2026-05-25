@@ -1,7 +1,14 @@
 "use client";
 
-import { useTransition } from "react";
+import { IconEdit, IconTrash } from "@tabler/icons-react";
 import Link from "next/link";
+import { useTransition } from "react";
+import {
+  deletePortfolio,
+  togglePortfolioStatus,
+} from "@/app/actions/portfolio";
+import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -10,14 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Button, buttonVariants } from "@/components/ui/button";
 import { DeleteDialog } from "./delete-dialog";
-import {
-  deletePortfolio,
-  togglePortfolioStatus,
-} from "@/app/actions/portfolio";
-import { IconEdit, IconTrash } from "@tabler/icons-react";
 
 interface PortfolioItem {
   id: string;
@@ -56,10 +56,7 @@ export function PortfolioList({ items }: PortfolioListProps) {
         <TableBody>
           {items.length === 0 && (
             <TableRow>
-              <TableCell
-                colSpan={6}
-                className="py-8 text-center text-zinc-500"
-              >
+              <TableCell colSpan={6} className="py-8 text-center text-zinc-500">
                 No portfolio items yet. Create your first one.
               </TableCell>
             </TableRow>
@@ -70,6 +67,7 @@ export function PortfolioList({ items }: PortfolioListProps) {
               <TableCell className="font-medium">{item.title}</TableCell>
               <TableCell>
                 <button
+                  type="button"
                   onClick={() => handleToggleStatus(item.id)}
                   disabled={isPending}
                 >
@@ -93,7 +91,10 @@ export function PortfolioList({ items }: PortfolioListProps) {
                 <div className="flex items-center justify-end gap-1">
                   <Link
                     href={`/admin/portfolio/${item.id}/edit`}
-                    className={buttonVariants({ variant: "ghost", size: "icon-sm" })}
+                    className={buttonVariants({
+                      variant: "ghost",
+                      size: "icon-sm",
+                    })}
                   >
                     <IconEdit className="size-4" />
                   </Link>

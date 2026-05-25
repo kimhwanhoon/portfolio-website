@@ -1,12 +1,12 @@
 "use server";
 
+import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { auth } from "@clerk/nextjs/server";
-import { db } from "@/lib/db";
-import { images } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { DeleteObjectCommand } from "@aws-sdk/client-s3";
-import { r2Client, R2_BUCKET } from "@/lib/r2/client";
+import { db } from "@/lib/db";
+import { images, imageTranslations } from "@/lib/db/schema";
+import { R2_BUCKET, r2Client } from "@/lib/r2/client";
 
 async function requireAdmin() {
   const { userId } = await auth();
@@ -29,12 +29,20 @@ export async function saveImageRecord(data: {
     .values({
       url: data.url,
       portfolioId: data.portfolioId ?? null,
-      alt: data.alt ?? "",
       width: data.width ?? null,
       height: data.height ?? null,
       fileSize: data.fileSize ?? null,
     })
     .returning();
+
+  // Create English alt text translation
+  if (data.alt) {
+    await db.insert(imageTranslations).values({
+      imageId: inserted.id,
+      locale: "en",
+      alt: data.alt,
+    });
+  }
 
   revalidatePath("/admin/images");
   return inserted;
@@ -51,12 +59,13 @@ export async function deleteImage(id: string) {
   try {
     const key = new URL(image.url).pathname.slice(1);
     await r2Client.send(
-      new DeleteObjectCommand({ Bucket: R2_BUCKET, Key: key })
+      new DeleteObjectCommand({ Bucket: R2_BUCKET, Key: key }),
     );
   } catch {
     console.error(`Failed to delete R2 object for image ${id}`);
   }
 
+  // Cascade deletes translations
   await db.delete(images).where(eq(images.id, id));
 
   revalidatePath("/admin/images");
@@ -65,14 +74,31 @@ export async function deleteImage(id: string) {
 export async function updateImageAlt(id: string, alt: string) {
   await requireAdmin();
 
-  await db.update(images).set({ alt }).where(eq(images.id, id));
+  const existing = await db
+    .select()
+    .from(imageTranslations)
+    .where(eq(imageTranslations.imageId, id))
+    .limit(1);
+
+  if (existing.length > 0) {
+    await db
+      .update(imageTranslations)
+      .set({ alt, updatedAt: new Date() })
+      .where(eq(imageTranslations.imageId, id));
+  } else {
+    await db.insert(imageTranslations).values({
+      imageId: id,
+      locale: "en",
+      alt,
+    });
+  }
 
   revalidatePath("/admin/images");
 }
 
 export async function assignImagesToPortfolio(
   imageIds: string[],
-  portfolioId: string
+  portfolioId: string,
 ) {
   await requireAdmin();
 

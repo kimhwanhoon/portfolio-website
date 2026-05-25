@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { PortfolioCard } from "./portfolio-card";
 
 interface PortfolioItem {
@@ -10,21 +11,22 @@ interface PortfolioItem {
 
 interface PortfolioGridProps {
   items: PortfolioItem[];
+  locale: string;
 }
 
-export function PortfolioGrid({ items }: PortfolioGridProps) {
+export async function PortfolioGrid({ items, locale }: PortfolioGridProps) {
+  const t = await getTranslations("portfolio");
+
   if (items.length === 0) {
     return (
-      <p className="py-12 text-center text-muted-foreground">
-        No projects to show yet. Check back soon.
-      </p>
+      <p className="py-12 text-center text-muted-foreground">{t("empty")}</p>
     );
   }
 
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {items.map((item) => (
-        <PortfolioCard key={item.slug} {...item} />
+        <PortfolioCard key={item.slug} {...item} locale={locale} />
       ))}
     </div>
   );

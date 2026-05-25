@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface GalleryImage {
@@ -22,7 +22,15 @@ export function ImageGallery({ images, thumbnailUrl }: ImageGalleryProps) {
     images.length > 0
       ? images
       : thumbnailUrl
-        ? [{ id: "thumb", url: thumbnailUrl, alt: null, width: null, height: null }]
+        ? [
+            {
+              id: "thumb",
+              url: thumbnailUrl,
+              alt: null,
+              width: null,
+              height: null,
+            },
+          ]
         : [];
 
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -54,7 +62,7 @@ export function ImageGallery({ images, thumbnailUrl }: ImageGalleryProps) {
                 "relative size-16 flex-shrink-0 overflow-hidden rounded-md border-2 transition-colors",
                 i === selectedIndex
                   ? "border-primary"
-                  : "border-transparent hover:border-zinc-300"
+                  : "border-transparent hover:border-zinc-300",
               )}
             >
               <Image

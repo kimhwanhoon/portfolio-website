@@ -1,14 +1,10 @@
 "use client";
 
+import { UserButton } from "@clerk/nextjs";
+import { IconLayoutDashboard, IconPhoto, IconPlus } from "@tabler/icons-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { UserButton } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
-import {
-  IconLayoutDashboard,
-  IconPlus,
-  IconPhoto,
-} from "@tabler/icons-react";
 
 const navItems = [
   {
@@ -52,7 +48,7 @@ export function AdminNav() {
                 "flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors",
                 isActive
                   ? "bg-zinc-200/70 font-medium text-zinc-900"
-                  : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
+                  : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900",
               )}
             >
               <item.icon className="size-4" />

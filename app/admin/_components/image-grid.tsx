@@ -1,16 +1,14 @@
 "use client";
 
+import { IconTrash } from "@tabler/icons-react";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
+import { deleteImage } from "@/app/actions/images";
 import { Badge } from "@/components/ui/badge";
 import { DeleteDialog } from "./delete-dialog";
-import { deleteImage } from "@/app/actions/images";
-import { IconTrash } from "@tabler/icons-react";
 
 interface ImageItem {
   id: string;
   url: string;
-  alt: string | null;
   width: number | null;
   height: number | null;
   fileSize: number | null;
@@ -48,7 +46,7 @@ export function ImageGrid({ images }: ImageGridProps) {
           <div className="relative aspect-video">
             <Image
               src={image.url}
-              alt={image.alt || "Uploaded image"}
+              alt="Uploaded image"
               fill
               className="object-cover"
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"

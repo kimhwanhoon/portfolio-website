@@ -1,29 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useAuth } from "@clerk/nextjs";
+import { IconMenu2, IconSettings, IconX } from "@tabler/icons-react";
 import Link from "next/link";
-import { IconMenu2, IconX } from "@tabler/icons-react";
-
-const navLinks = [
-  { label: "Portfolio", href: "#portfolio" },
-  { label: "About", href: "#about" },
-  { label: "Contact", href: "#contact" },
-];
+import { useLocale, useTranslations } from "next-intl";
+import { useState } from "react";
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const { isSignedIn } = useAuth();
+  const t = useTranslations("nav");
+  const tHero = useTranslations("hero");
+  const locale = useLocale();
+
+  const navLinks = [
+    { label: t("portfolio"), href: "#portfolio" },
+    { label: t("about"), href: `/${locale}/about` },
+    { label: t("contact"), href: "#contact" },
+  ];
 
   return (
     <header className="sticky top-0 z-40 border-b bg-white/80 backdrop-blur-sm">
       <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
         <Link
-          href="/"
+          href={`/${locale}`}
           className="font-heading text-sm font-semibold tracking-tight"
         >
-          Kim Hwanhoon
+          {tHero("name")}
         </Link>
 
-        {/* Desktop nav */}
         <nav className="hidden items-center gap-6 sm:flex">
           {navLinks.map((link) => (
             <a
@@ -34,20 +39,31 @@ export function SiteHeader() {
               {link.label}
             </a>
           ))}
+          {isSignedIn && (
+            <Link
+              href="/admin"
+              className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <IconSettings className="size-3.5" />
+              Admin
+            </Link>
+          )}
         </nav>
 
-        {/* Mobile toggle */}
         <button
           type="button"
           onClick={() => setOpen(!open)}
           className="sm:hidden text-muted-foreground"
-          aria-label={open ? "Close menu" : "Open menu"}
+          aria-label={open ? t("closeMenu") : t("openMenu")}
         >
-          {open ? <IconX className="size-5" /> : <IconMenu2 className="size-5" />}
+          {open ? (
+            <IconX className="size-5" />
+          ) : (
+            <IconMenu2 className="size-5" />
+          )}
         </button>
       </div>
 
-      {/* Mobile nav */}
       {open && (
         <nav className="border-t bg-white px-6 py-4 sm:hidden">
           <div className="flex flex-col gap-3">
@@ -61,6 +77,16 @@ export function SiteHeader() {
                 {link.label}
               </a>
             ))}
+            {isSignedIn && (
+              <Link
+                href="/admin"
+                onClick={() => setOpen(false)}
+                className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <IconSettings className="size-3.5" />
+                Admin
+              </Link>
+            )}
           </div>
         </nav>
       )}

@@ -1,25 +1,28 @@
-import { buttonVariants } from "@/components/ui/button";
 import {
-  IconMail,
-  IconBrandLinkedin,
   IconBrandGithub,
+  IconBrandLinkedin,
+  IconMail,
 } from "@tabler/icons-react";
+import { getTranslations } from "next-intl/server";
+import { buttonVariants } from "@/components/ui/button";
 
-export function HeroSection() {
+export async function HeroSection() {
+  const t = await getTranslations("hero");
+
   return (
     <section className="flex min-h-[calc(100vh-3.5rem)] items-center px-6">
       <div className="mx-auto max-w-5xl">
         <div className="max-w-2xl space-y-6">
           <div className="space-y-2">
             <p className="text-sm font-medium tracking-widest text-muted-foreground uppercase">
-              Frontend Developer
+              {t("label")}
             </p>
             <h1 className="font-heading text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-              Kim Hwanhoon
+              {t("name")}
             </h1>
           </div>
           <p className="text-lg leading-relaxed text-muted-foreground sm:text-xl">
-            I craft web experiences that just work.
+            {t("tagline")}
           </p>
           <div className="flex flex-col gap-3 sm:flex-row">
             <a
@@ -27,7 +30,7 @@ export function HeroSection() {
               className={buttonVariants({ size: "lg" })}
             >
               <IconMail className="size-4" />
-              Get in Touch
+              {t("cta")}
             </a>
             <a
               href="https://linkedin.com/in/"
@@ -36,7 +39,7 @@ export function HeroSection() {
               className={buttonVariants({ variant: "outline", size: "lg" })}
             >
               <IconBrandLinkedin className="size-4" />
-              LinkedIn
+              {t("linkedin")}
             </a>
             <a
               href="https://github.com/"
@@ -45,7 +48,7 @@ export function HeroSection() {
               className={buttonVariants({ variant: "outline", size: "lg" })}
             >
               <IconBrandGithub className="size-4" />
-              GitHub
+              {t("github")}
             </a>
           </div>
         </div>

@@ -1,9 +1,10 @@
+import { IconBrandGithub, IconExternalLink } from "@tabler/icons-react";
+import { getTranslations } from "next-intl/server";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ImageGallery } from "./image-gallery";
 import { MarkdownRenderer } from "./markdown-renderer";
-import { IconExternalLink, IconBrandGithub } from "@tabler/icons-react";
 
 interface PortfolioImage {
   id: string;
@@ -37,7 +38,8 @@ function formatDateRange(start: Date | null, end: Date | null): string | null {
   return `${startStr} — ${endStr}`;
 }
 
-export function PortfolioDetail({ item }: PortfolioDetailProps) {
+export async function PortfolioDetail({ item }: PortfolioDetailProps) {
+  const t = await getTranslations("detail");
   const dateRange = formatDateRange(item.startDate, item.endDate);
   const tags = item.techStack ?? [];
 
@@ -75,7 +77,7 @@ export function PortfolioDetail({ item }: PortfolioDetailProps) {
                 className={buttonVariants({ variant: "outline", size: "sm" })}
               >
                 <IconExternalLink className="size-4" />
-                Live Site
+                {t("liveSite")}
               </a>
             )}
             {item.githubUrl && (
@@ -86,7 +88,7 @@ export function PortfolioDetail({ item }: PortfolioDetailProps) {
                 className={buttonVariants({ variant: "outline", size: "sm" })}
               >
                 <IconBrandGithub className="size-4" />
-                Source Code
+                {t("sourceCode")}
               </a>
             )}
           </div>
