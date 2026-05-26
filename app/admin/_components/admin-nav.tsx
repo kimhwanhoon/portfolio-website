@@ -3,6 +3,7 @@
 import { UserButton } from "@clerk/nextjs";
 import {
   IconArticle,
+  IconExternalLink,
   IconLayoutDashboard,
   IconPhoto,
   IconPlus,
@@ -72,7 +73,18 @@ export function AdminNav() {
           );
         })}
       </nav>
-      <div className="border-t p-4">
+      <div className="flex flex-col gap-3 border-t p-4">
+        <Link
+          href="/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+        >
+          <span className="flex items-center gap-2">
+            <IconExternalLink className="size-4" />
+            View site
+          </span>
+        </Link>
         <UserButton />
       </div>
     </aside>
