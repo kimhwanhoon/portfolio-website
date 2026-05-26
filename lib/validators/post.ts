@@ -70,6 +70,7 @@ export const postSchema = z.object({
   contentJson: tiptapDocSchema.refine(hasNonEmptyContent, {
     message: "Post content is required",
   }),
+  contentHtml: z.string().min(1, "Post content is required"),
   status: z.enum(["draft", "published"]).default("draft"),
   featured: z.boolean().default(false),
   publishedAt: z.coerce.date().optional().nullable(),

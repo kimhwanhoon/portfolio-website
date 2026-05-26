@@ -146,6 +146,8 @@ export function PostForm({ initialData, availableImages = [] }: PostFormProps) {
     isDirty || editorDirty,
   );
 
+  console.log(errors);
+
   useEffect(() => {
     const draft = restore();
     if (!draft) return;
@@ -196,8 +198,9 @@ export function PostForm({ initialData, availableImages = [] }: PostFormProps) {
   }
 
   function onSubmit(data: PostFormInput) {
-    const { json } = editorRef.current?.getContent() ?? {
+    const { json, html } = editorRef.current?.getContent() ?? {
       json: EMPTY_TIPTAP_DOC,
+      html: "",
     };
 
     const tagsField = (
@@ -207,6 +210,7 @@ export function PostForm({ initialData, availableImages = [] }: PostFormProps) {
     const payload: PostFormData = {
       ...data,
       contentJson: json as PostFormData["contentJson"],
+      contentHtml: html,
       tagSlugs: (tagsField ?? "")
         .split(",")
         .map((t) => t.trim())

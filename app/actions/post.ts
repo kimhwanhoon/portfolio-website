@@ -124,6 +124,7 @@ export async function createPost(data: unknown) {
   const slug = resolveSlug(validated);
   const { contentHtml, readingMinutes } = await processPostContent(
     validated.contentJson as TiptapJSON,
+    validated.contentHtml,
   );
 
   const publishedAt =
@@ -188,6 +189,7 @@ export async function updatePost(id: string, data: unknown) {
   const oldSlug = existingPost.slug;
   const { contentHtml, readingMinutes } = await processPostContent(
     validated.contentJson as TiptapJSON,
+    validated.contentHtml,
   );
 
   const publishedAt =
