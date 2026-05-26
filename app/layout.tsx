@@ -2,6 +2,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter, Montserrat } from "next/font/google";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
 import { cn } from "@/lib/utils";
 
 const montserratHeading = Montserrat({
@@ -74,6 +75,7 @@ export default function RootLayout({
             Skip to content
           </a>
           {children}
+          <Analytics />
         </body>
       </html>
     </ClerkProvider>
