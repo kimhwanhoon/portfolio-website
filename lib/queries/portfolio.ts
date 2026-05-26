@@ -149,6 +149,31 @@ export async function getAllPortfolioItemsForAdmin() {
     .orderBy(asc(portfolioItems.sortOrder));
 }
 
+// All images with English alt text, for admin views (image grid + image picker)
+export async function getAllImagesForAdmin() {
+  return db
+    .select({
+      id: images.id,
+      url: images.url,
+      portfolioId: images.portfolioId,
+      sortOrder: images.sortOrder,
+      width: images.width,
+      height: images.height,
+      fileSize: images.fileSize,
+      createdAt: images.createdAt,
+      alt: imageTranslations.alt,
+    })
+    .from(images)
+    .leftJoin(
+      imageTranslations,
+      and(
+        eq(imageTranslations.imageId, images.id),
+        eq(imageTranslations.locale, "en"),
+      ),
+    )
+    .orderBy(desc(images.createdAt));
+}
+
 export async function getPortfolioItemForEdit(id: string) {
   const rows = await db
     .select({

@@ -4,6 +4,7 @@ import { IconTrash } from "@tabler/icons-react";
 import Image from "next/image";
 import { deleteImage } from "@/app/actions/images";
 import { Badge } from "@/components/ui/badge";
+import { AltEditDialog } from "./alt-edit-dialog";
 import { DeleteDialog } from "./delete-dialog";
 
 interface ImageItem {
@@ -14,6 +15,7 @@ interface ImageItem {
   fileSize: number | null;
   portfolioId: string | null;
   createdAt: Date;
+  alt: string | null;
 }
 
 interface ImageGridProps {
@@ -46,13 +48,13 @@ export function ImageGrid({ images }: ImageGridProps) {
           <div className="relative aspect-video">
             <Image
               src={image.url}
-              alt="Uploaded image"
+              alt={image.alt || "Uploaded image"}
               fill
               className="object-cover"
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             />
           </div>
-          <div className="space-y-1 p-2">
+          <div className="space-y-1.5 p-2">
             <div className="flex items-center justify-between">
               <span className="text-xs text-zinc-500">
                 {formatFileSize(image.fileSize)}
@@ -63,7 +65,20 @@ export function ImageGrid({ images }: ImageGridProps) {
                 </Badge>
               )}
             </div>
-            <div className="flex items-center justify-end">
+            <p
+              className={`line-clamp-2 min-h-9 text-xs ${
+                image.alt ? "text-zinc-700" : "text-zinc-400 italic"
+              }`}
+              title={image.alt ?? undefined}
+            >
+              {image.alt || "No alt text"}
+            </p>
+            <div className="flex items-center justify-end gap-1">
+              <AltEditDialog
+                imageId={image.id}
+                currentAlt={image.alt}
+                triggerClassName="opacity-0 transition-opacity group-hover:opacity-100"
+              />
               <DeleteDialog
                 title="Delete image"
                 description="Are you sure you want to delete this image? This action cannot be undone."

@@ -1,9 +1,9 @@
-import { desc } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { PortfolioForm } from "@/app/admin/_components/portfolio-form";
-import { db } from "@/lib/db";
-import { images } from "@/lib/db/schema";
-import { getPortfolioItemForEdit } from "@/lib/queries/portfolio";
+import {
+  getAllImagesForAdmin,
+  getPortfolioItemForEdit,
+} from "@/lib/queries/portfolio";
 
 export default async function EditPortfolioPage({
   params,
@@ -15,27 +15,16 @@ export default async function EditPortfolioPage({
   const item = await getPortfolioItemForEdit(id);
   if (!item) notFound();
 
-  const allImages = await db
-    .select({
-      id: images.id,
-      url: images.url,
-      alt: images.id, // placeholder — alt is in translations now
-      width: images.width,
-      height: images.height,
-      portfolioId: images.portfolioId,
-    })
-    .from(images)
-    .orderBy(desc(images.createdAt));
+  const allImages = await getAllImagesForAdmin();
 
   const assignedImageIds = allImages
     .filter((img) => img.portfolioId === id)
     .map((img) => img.id);
 
-  // Map to the shape the form expects
   const formImages = allImages.map((img) => ({
     id: img.id,
     url: img.url,
-    alt: null as string | null,
+    alt: img.alt,
     width: img.width,
     height: img.height,
   }));

@@ -1,14 +1,9 @@
-import { desc } from "drizzle-orm";
-import { db } from "@/lib/db";
-import { images } from "@/lib/db/schema";
+import { getAllImagesForAdmin } from "@/lib/queries/portfolio";
 import { ImageGrid } from "../_components/image-grid";
 import { ImageUpload } from "../_components/image-upload";
 
 export default async function ImagesPage() {
-  const allImages = await db
-    .select()
-    .from(images)
-    .orderBy(desc(images.createdAt));
+  const allImages = await getAllImagesForAdmin();
 
   return (
     <div className="space-y-6">
