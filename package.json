@@ -11,7 +11,7 @@
     "format": "biome format --write .",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:push": "drizzle-kit push",
+    "db:bootstrap": "bun run scripts/bootstrap-migrations.ts",
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
