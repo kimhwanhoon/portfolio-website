@@ -20,7 +20,7 @@ export default async function EditPostPage({
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Edit Post</h1>
-        <p className="text-sm text-zinc-500">{post.title}</p>
+        <p className="text-sm text-zinc-500">{post.translations.en.title}</p>
       </div>
       <PostForm
         initialData={post}

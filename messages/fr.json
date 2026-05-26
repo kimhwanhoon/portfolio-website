@@ -1,0 +1,112 @@
+{
+  "meta": {
+    "title": "Kim Hwanhoon | Frontend Developer",
+    "titleTemplate": "{title} | Kim Hwanhoon",
+    "description": "Frontend developer portfolio — I craft web experiences that just work."
+  },
+  "nav": {
+    "portfolio": "Portfolio",
+    "blog": "Blog",
+    "about": "About",
+    "contact": "Contact",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "hero": {
+    "label": "Frontend Developer",
+    "name": "Kim Hwanhoon",
+    "tagline": "I craft web experiences that just work.",
+    "cta": "Get in Touch",
+    "linkedin": "LinkedIn",
+    "github": "GitHub"
+  },
+  "portfolio": {
+    "heading": "Selected Work",
+    "empty": "No projects to show yet. Check back soon.",
+    "noImage": "No image"
+  },
+  "about": {
+    "heading": "About",
+    "bio": {
+      "0": "I'm a frontend developer who focuses on building clean, performant, and accessible web applications. I care deeply about user experience and believe that great interfaces should feel invisible.",
+      "1": "With experience across the full JavaScript ecosystem, I enjoy turning complex requirements into simple, elegant solutions. When I'm not coding, I'm exploring new tools and contributing to the developer community."
+    },
+    "skillsHeading": "Skills & Technologies",
+    "learnMore": "Learn more about me"
+  },
+  "aboutPage": {
+    "title": "About",
+    "extendedBio": {
+      "0": "I'm a frontend developer who focuses on building clean, performant, and accessible web applications. I care deeply about user experience and believe that great interfaces should feel invisible.",
+      "1": "With experience across the full JavaScript ecosystem, I enjoy turning complex requirements into simple, elegant solutions. I'm most productive when working at the intersection of design and engineering — translating ideas into polished, production-ready interfaces.",
+      "2": "When I'm not coding, I'm exploring new tools, contributing to the developer community, and staying curious about what's next in the web platform."
+    },
+    "experienceHeading": "Experience",
+    "timeline": {
+      "0": {
+        "date": "Dec 2024 — Present",
+        "title": "Frontend Engineer",
+        "company": "GetVocal",
+        "description": "Frontend engineer on an AI-powered voice & chat agent SaaS platform. Shipped 1,300+ commits and 200+ PRs across a React/TypeScript monorepo, owning core subsystems end-to-end — including a visual conversation designer, bundle versioning, webcall audio pipeline, and auth infrastructure. Led framework upgrades (React 19, Vite), performance refactors, and design system contributions."
+      },
+      "1": {
+        "date": "May 2023 — Nov 2023",
+        "title": "Coding Bootcamp Graduate",
+        "company": "Team Sparta · Seoul, Korea",
+        "description": "Completed an intensive full-stack bootcamp covering HTML, CSS, JavaScript, React, Redux, and React Query. Built team projects with 5 collaborators. Self-learned Next.js App Router and foundational backend development after graduating."
+      },
+      "2": {
+        "date": "Aug 2019 — Aug 2022",
+        "title": "Travel Agent",
+        "company": "Sally Tour · Seoul, Korea",
+        "description": "Handled B2B & B2C tour sales, attracting overseas customers and producing tours. Managed homepage production, marketing, and automated websites using Wix and scripting tools."
+      }
+    },
+    "backToHome": "Back to home"
+  },
+  "contact": {
+    "heading": "Let's Connect",
+    "description": "I'm always open to new opportunities and interesting conversations. Feel free to reach out.",
+    "email": "Email Me",
+    "linkedin": "LinkedIn",
+    "github": "GitHub"
+  },
+  "footer": {
+    "copyright": "© {year} Kim Hwanhoon"
+  },
+  "detail": {
+    "backToPortfolio": "Back to portfolio",
+    "liveSite": "Live Site",
+    "sourceCode": "Source Code"
+  },
+  "common": {
+    "skipToContent": "Skip to content"
+  },
+  "blog": {
+    "heading": "Blog",
+    "subtitle": "Thoughts on frontend development, tools, and craft.",
+    "featuredLabel": "Featured",
+    "readMin": "{minutes} min read",
+    "emptyState": "No posts yet. Check back soon.",
+    "emptyForTag": "No posts with this tag yet.",
+    "filterByTag": "Filter posts by tag",
+    "paginationLabel": "Blog pagination",
+    "allTags": "All",
+    "backToBlog": "Back to blog",
+    "publishedOn": "Published {date}",
+    "noCover": "No cover image",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {current} of {total}",
+    "draftAvailable": "Draft from {time} available",
+    "restoreDraft": "Restore",
+    "discardDraft": "Discard",
+    "draftSaved": "Saved {time}",
+    "slugConflict": "A post with this slug already exists. Choose a different slug."
+  },
+  "theme": {
+    "toggle": "Toggle theme",
+    "light": "Switch to light mode",
+    "dark": "Switch to dark mode"
+  }
+}

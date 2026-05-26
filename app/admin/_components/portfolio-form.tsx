@@ -11,11 +11,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import type { Locale } from "@/i18n/routing";
+import { isTranslationEmpty } from "@/lib/i18n/translation-utils";
+import type { PortfolioEditTranslations } from "@/lib/queries/portfolio";
 import {
   type PortfolioFormData,
-  portfolioSchema,
+  type PortfolioFormInput,
+  portfolioFormSchema,
 } from "@/lib/validators/portfolio";
 import { ImagePicker } from "./image-picker";
+import { LocaleTabs } from "./locale-tabs";
 
 interface AvailableImage {
   id: string;
@@ -28,10 +33,7 @@ interface AvailableImage {
 interface PortfolioFormProps {
   initialData?: {
     id: string;
-    title: string;
     slug: string;
-    shortDescription: string;
-    fullDescription: string;
     thumbnailUrl: string | null;
     techStack: string[] | null;
     liveUrl: string | null;
@@ -41,10 +43,17 @@ interface PortfolioFormProps {
     status: "draft" | "published";
     startDate: Date | null;
     endDate: Date | null;
+    translations: PortfolioEditTranslations;
   };
   allImages?: AvailableImage[];
   initialImageIds?: string[];
 }
+
+const emptyTranslation = {
+  title: "",
+  shortDescription: "",
+  fullDescription: "",
+};
 
 function slugify(text: string): string {
   return text
@@ -71,14 +80,11 @@ export function PortfolioForm({
     setValue,
     watch,
     formState: { errors },
-  } = useForm<PortfolioFormData>({
+  } = useForm<PortfolioFormInput>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(portfolioSchema) as any,
+    resolver: zodResolver(portfolioFormSchema) as any,
     defaultValues: {
-      title: initialData?.title ?? "",
       slug: initialData?.slug ?? "",
-      shortDescription: initialData?.shortDescription ?? "",
-      fullDescription: initialData?.fullDescription ?? "",
       thumbnailUrl: initialData?.thumbnailUrl ?? "",
       techStack: initialData?.techStack ?? [],
       liveUrl: initialData?.liveUrl ?? "",
@@ -88,6 +94,10 @@ export function PortfolioForm({
       status: initialData?.status ?? "draft",
       startDate: initialData?.startDate ?? null,
       endDate: initialData?.endDate ?? null,
+      translations: {
+        en: initialData?.translations.en ?? emptyTranslation,
+        fr: initialData?.translations.fr ?? emptyTranslation,
+      },
     },
   });
 
@@ -95,19 +105,30 @@ export function PortfolioForm({
   const status = watch("status");
   const thumbnailUrl = watch("thumbnailUrl");
 
-  function onTitleBlur(e: React.FocusEvent<HTMLInputElement>) {
+  function onTitleBlur(locale: Locale, e: React.FocusEvent<HTMLInputElement>) {
+    if (locale !== "en") return;
     const currentSlug = watch("slug");
     if (!currentSlug || !isEditing) {
       setValue("slug", slugify(e.target.value));
     }
   }
 
-  function onSubmit(data: PortfolioFormData) {
+  function onSubmit(data: PortfolioFormInput) {
+    const payload: PortfolioFormData = {
+      ...data,
+      translations: {
+        en: data.translations.en,
+        ...(isTranslationEmpty(data.translations.fr)
+          ? {}
+          : { fr: data.translations.fr }),
+      },
+    };
+
     startTransition(async () => {
       if (isEditing) {
-        await updatePortfolio(initialData.id, data, selectedImageIds);
+        await updatePortfolio(initialData.id, payload, selectedImageIds);
       } else {
-        await createPortfolio(data, selectedImageIds);
+        await createPortfolio(payload, selectedImageIds);
       }
     });
   }
@@ -116,42 +137,76 @@ export function PortfolioForm({
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       <Card>
         <CardHeader>
-          <CardTitle>Basic Information</CardTitle>
+          <CardTitle>Content</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <LocaleTabs>
+            {(locale) => (
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor={`title-${locale}`}>Title</Label>
+                  <Input
+                    id={`title-${locale}`}
+                    placeholder="Project name"
+                    {...register(`translations.${locale}.title`)}
+                    onBlur={(e) => onTitleBlur(locale, e)}
+                  />
+                  {errors.translations?.[locale]?.title && (
+                    <p className="text-sm text-red-500">
+                      {errors.translations[locale]?.title?.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor={`shortDescription-${locale}`}>
+                    Short Description
+                  </Label>
+                  <Textarea
+                    id={`shortDescription-${locale}`}
+                    placeholder="Brief description for the card (max 300 chars)"
+                    rows={2}
+                    {...register(`translations.${locale}.shortDescription`)}
+                  />
+                  {errors.translations?.[locale]?.shortDescription && (
+                    <p className="text-sm text-red-500">
+                      {errors.translations[locale]?.shortDescription?.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor={`fullDescription-${locale}`}>
+                    Full Description (Markdown)
+                  </Label>
+                  <Textarea
+                    id={`fullDescription-${locale}`}
+                    placeholder="Detailed project description. Supports Markdown."
+                    rows={10}
+                    {...register(`translations.${locale}.fullDescription`)}
+                  />
+                  {errors.translations?.[locale]?.fullDescription && (
+                    <p className="text-sm text-red-500">
+                      {errors.translations[locale]?.fullDescription?.message}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+          </LocaleTabs>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Details</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
-            <Input
-              id="title"
-              placeholder="Project name"
-              {...register("title")}
-              onBlur={onTitleBlur}
-            />
-            {errors.title && (
-              <p className="text-sm text-red-500">{errors.title.message}</p>
-            )}
-          </div>
-
           <div className="space-y-2">
             <Label htmlFor="slug">Slug</Label>
             <Input id="slug" placeholder="project-name" {...register("slug")} />
             {errors.slug && (
               <p className="text-sm text-red-500">{errors.slug.message}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="shortDescription">Short Description</Label>
-            <Textarea
-              id="shortDescription"
-              placeholder="Brief description for the card (max 300 chars)"
-              rows={2}
-              {...register("shortDescription")}
-            />
-            {errors.shortDescription && (
-              <p className="text-sm text-red-500">
-                {errors.shortDescription.message}
-              </p>
             )}
           </div>
 
@@ -177,21 +232,6 @@ export function PortfolioForm({
                   sizes="200px"
                 />
               </div>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="fullDescription">Full Description (Markdown)</Label>
-            <Textarea
-              id="fullDescription"
-              placeholder="Detailed project description. Supports Markdown."
-              rows={10}
-              {...register("fullDescription")}
-            />
-            {errors.fullDescription && (
-              <p className="text-sm text-red-500">
-                {errors.fullDescription.message}
-              </p>
             )}
           </div>
         </CardContent>

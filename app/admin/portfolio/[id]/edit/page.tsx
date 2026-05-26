@@ -36,7 +36,7 @@ export default async function EditPortfolioPage({
           Edit Portfolio Item
         </h1>
         <p className="text-sm text-zinc-500">
-          Update &ldquo;{item.title}&rdquo;.
+          Update &ldquo;{item.translations.en.title}&rdquo;.
         </p>
       </div>
       <PortfolioForm

@@ -1,8 +1,11 @@
 import { and, asc, count, desc, eq, inArray, ne, sql } from "drizzle-orm";
+import { alias } from "drizzle-orm/pg-core";
 import type { Locale } from "@/i18n/routing";
 import { routing } from "@/i18n/routing";
 import { db } from "@/lib/db";
 import { posts, postTags, postTranslations, tags } from "@/lib/db/schema";
+import { coalesceTranslation, DEFAULT_LOCALE } from "@/lib/db/translations";
+import type { PostTranslationFields } from "@/lib/validators/post";
 
 export type PostTag = { slug: string; name: string };
 
@@ -18,6 +21,29 @@ export type PostListItem = {
   excerpt: string;
   tags: PostTag[];
 };
+
+const postT = postTranslations;
+const postTEn = alias(postTranslations, "post_translations_en");
+
+function postTranslationSelect() {
+  return {
+    title: coalesceTranslation(postT.title, postTEn.title),
+    excerpt: coalesceTranslation(postT.excerpt, postTEn.excerpt),
+  };
+}
+
+function postTranslationJoins(locale: Locale) {
+  return {
+    innerJoinEn: {
+      table: postTEn,
+      on: and(eq(postTEn.postId, posts.id), eq(postTEn.locale, DEFAULT_LOCALE)),
+    },
+    leftJoinLocale: {
+      table: postT,
+      on: and(eq(postT.postId, posts.id), eq(postT.locale, locale)),
+    },
+  };
+}
 
 function mapTags(rows: { slug: string; name: string }[]): PostTag[] {
   return rows;
@@ -56,6 +82,8 @@ export async function getPublishedPosts(
   locale: Locale = routing.defaultLocale,
   tagSlug?: string,
 ): Promise<PostListItem[]> {
+  const joins = postTranslationJoins(locale);
+
   const baseQuery = db
     .select({
       id: posts.id,
@@ -65,17 +93,11 @@ export async function getPublishedPosts(
       readingMinutes: posts.readingMinutes,
       publishedAt: posts.publishedAt,
       updatedAt: posts.updatedAt,
-      title: postTranslations.title,
-      excerpt: postTranslations.excerpt,
+      ...postTranslationSelect(),
     })
     .from(posts)
-    .innerJoin(
-      postTranslations,
-      and(
-        eq(postTranslations.postId, posts.id),
-        eq(postTranslations.locale, locale),
-      ),
-    )
+    .innerJoin(joins.innerJoinEn.table, joins.innerJoinEn.on)
+    .leftJoin(joins.leftJoinLocale.table, joins.leftJoinLocale.on)
     .where(eq(posts.status, "published"))
     .orderBy(desc(posts.publishedAt), desc(posts.createdAt));
 
@@ -98,6 +120,8 @@ export async function getPublishedPosts(
 export async function getFeaturedPost(
   locale: Locale = routing.defaultLocale,
 ): Promise<PostListItem | null> {
+  const joins = postTranslationJoins(locale);
+
   const rows = await db
     .select({
       id: posts.id,
@@ -107,17 +131,11 @@ export async function getFeaturedPost(
       readingMinutes: posts.readingMinutes,
       publishedAt: posts.publishedAt,
       updatedAt: posts.updatedAt,
-      title: postTranslations.title,
-      excerpt: postTranslations.excerpt,
+      ...postTranslationSelect(),
     })
     .from(posts)
-    .innerJoin(
-      postTranslations,
-      and(
-        eq(postTranslations.postId, posts.id),
-        eq(postTranslations.locale, locale),
-      ),
-    )
+    .innerJoin(joins.innerJoinEn.table, joins.innerJoinEn.on)
+    .leftJoin(joins.leftJoinLocale.table, joins.leftJoinLocale.on)
     .where(and(eq(posts.status, "published"), eq(posts.featured, true)))
     .limit(1);
 
@@ -132,6 +150,8 @@ export async function getPostBySlug(
   slug: string,
   locale: Locale = routing.defaultLocale,
 ) {
+  const joins = postTranslationJoins(locale);
+
   const rows = await db
     .select({
       id: posts.id,
@@ -142,18 +162,13 @@ export async function getPostBySlug(
       publishedAt: posts.publishedAt,
       updatedAt: posts.updatedAt,
       createdAt: posts.createdAt,
-      title: postTranslations.title,
-      excerpt: postTranslations.excerpt,
-      contentHtml: postTranslations.contentHtml,
+      title: coalesceTranslation(postT.title, postTEn.title),
+      excerpt: coalesceTranslation(postT.excerpt, postTEn.excerpt),
+      contentHtml: coalesceTranslation(postT.contentHtml, postTEn.contentHtml),
     })
     .from(posts)
-    .innerJoin(
-      postTranslations,
-      and(
-        eq(postTranslations.postId, posts.id),
-        eq(postTranslations.locale, locale),
-      ),
-    )
+    .innerJoin(joins.innerJoinEn.table, joins.innerJoinEn.on)
+    .leftJoin(joins.leftJoinLocale.table, joins.leftJoinLocale.on)
     .where(and(eq(posts.slug, slug), eq(posts.status, "published")))
     .limit(1);
 
@@ -187,6 +202,7 @@ export async function getPublishedPostsPaginated({
   perPage?: number;
   excludeFeaturedId?: string | null;
 }): Promise<PaginatedPosts> {
+  const joins = postTranslationJoins(locale);
   const conditions = [eq(posts.status, "published")];
 
   if (excludeFeaturedId) {
@@ -212,13 +228,8 @@ export async function getPublishedPostsPaginated({
   const [{ total }] = await db
     .select({ total: count() })
     .from(posts)
-    .innerJoin(
-      postTranslations,
-      and(
-        eq(postTranslations.postId, posts.id),
-        eq(postTranslations.locale, locale),
-      ),
-    )
+    .innerJoin(joins.innerJoinEn.table, joins.innerJoinEn.on)
+    .leftJoin(joins.leftJoinLocale.table, joins.leftJoinLocale.on)
     .where(whereClause);
 
   const totalPages = Math.max(1, Math.ceil(total / perPage));
@@ -234,17 +245,11 @@ export async function getPublishedPostsPaginated({
       readingMinutes: posts.readingMinutes,
       publishedAt: posts.publishedAt,
       updatedAt: posts.updatedAt,
-      title: postTranslations.title,
-      excerpt: postTranslations.excerpt,
+      ...postTranslationSelect(),
     })
     .from(posts)
-    .innerJoin(
-      postTranslations,
-      and(
-        eq(postTranslations.postId, posts.id),
-        eq(postTranslations.locale, locale),
-      ),
-    )
+    .innerJoin(joins.innerJoinEn.table, joins.innerJoinEn.on)
+    .leftJoin(joins.leftJoinLocale.table, joins.leftJoinLocale.on)
     .where(whereClause)
     .orderBy(desc(posts.publishedAt), desc(posts.createdAt))
     .limit(perPage)
@@ -318,7 +323,7 @@ export async function getAllPostsForAdmin() {
       postTranslations,
       and(
         eq(postTranslations.postId, posts.id),
-        eq(postTranslations.locale, "en"),
+        eq(postTranslations.locale, DEFAULT_LOCALE),
       ),
     )
     .orderBy(desc(posts.updatedAt));
@@ -326,34 +331,40 @@ export async function getAllPostsForAdmin() {
   return attachTagsToPosts(rows);
 }
 
-export async function getPostForEdit(id: string) {
-  const rows = await db
-    .select({
-      id: posts.id,
-      slug: posts.slug,
-      coverImageUrl: posts.coverImageUrl,
-      status: posts.status,
-      featured: posts.featured,
-      readingMinutes: posts.readingMinutes,
-      publishedAt: posts.publishedAt,
-      updatedAt: posts.updatedAt,
-      title: postTranslations.title,
-      excerpt: postTranslations.excerpt,
-      contentJson: postTranslations.contentJson,
-    })
-    .from(posts)
-    .innerJoin(
-      postTranslations,
-      and(
-        eq(postTranslations.postId, posts.id),
-        eq(postTranslations.locale, "en"),
-      ),
-    )
-    .where(eq(posts.id, id))
-    .limit(1);
+export type PostEditTranslations = {
+  en: PostTranslationFields & { contentJson: Record<string, unknown> };
+  fr?: PostTranslationFields & { contentJson: Record<string, unknown> };
+};
 
-  const item = rows[0];
+export async function getPostForEdit(id: string) {
+  const item = await db.query.posts.findFirst({
+    where: eq(posts.id, id),
+    with: { translations: true },
+  });
+
   if (!item) return null;
+
+  const byLocale = Object.fromEntries(
+    item.translations.map((t) => [
+      t.locale,
+      {
+        title: t.title,
+        excerpt: t.excerpt,
+        contentJson: t.contentJson as Record<string, unknown>,
+      },
+    ]),
+  ) as Record<
+    string,
+    PostTranslationFields & { contentJson: Record<string, unknown> }
+  >;
+
+  const en = byLocale.en;
+  if (!en) return null;
+
+  const translations: PostEditTranslations = {
+    en,
+    ...(byLocale.fr ? { fr: byLocale.fr } : {}),
+  };
 
   const tagRows = await db
     .select({ slug: tags.slug, name: tags.name })
@@ -362,7 +373,15 @@ export async function getPostForEdit(id: string) {
     .where(eq(postTags.postId, id));
 
   return {
-    ...item,
+    id: item.id,
+    slug: item.slug,
+    coverImageUrl: item.coverImageUrl,
+    status: item.status,
+    featured: item.featured,
+    readingMinutes: item.readingMinutes,
+    publishedAt: item.publishedAt,
+    updatedAt: item.updatedAt,
+    translations,
     tags: mapTags(tagRows),
   };
 }

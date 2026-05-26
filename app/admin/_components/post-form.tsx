@@ -11,13 +11,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import type { Locale } from "@/i18n/routing";
 import type { TiptapJSON } from "@/lib/db/schema";
+import { isTranslationEmpty } from "@/lib/i18n/translation-utils";
+import type { PostEditTranslations } from "@/lib/queries/post";
 import {
   type PostFormData,
   type PostFormInput,
   postFormSchema,
   postSchema,
 } from "@/lib/validators/post";
+import { LocaleTabs } from "./locale-tabs";
 import {
   EMPTY_TIPTAP_DOC,
   TiptapEditor,
@@ -37,15 +41,13 @@ interface AvailableImage {
 interface PostFormProps {
   initialData?: {
     id: string;
-    title: string;
     slug: string;
-    excerpt: string;
     coverImageUrl: string | null;
     status: "draft" | "published";
     featured: boolean;
     publishedAt: Date | null;
     updatedAt: Date;
-    contentJson: TiptapJSON;
+    translations: PostEditTranslations;
     tags: { slug: string; name: string }[];
   };
   availableImages?: AvailableImage[];
@@ -82,15 +84,26 @@ function formatTimeAgo(iso: string): string {
 export function PostForm({ initialData, availableImages = [] }: PostFormProps) {
   const [isPending, startTransition] = useTransition();
   const isEditing = !!initialData;
-  const editorRef = useRef<TiptapEditorRef>(null);
+  const editorRefs = useRef<Partial<Record<Locale, TiptapEditorRef | null>>>(
+    {},
+  );
   const [error, setError] = useState<string | null>(null);
   const [pendingDraft, setPendingDraft] = useState<PostAutosaveSnapshot | null>(
     null,
   );
-  const [editorKey, setEditorKey] = useState(0);
-  const [editorContent, setEditorContent] = useState<TiptapJSON | undefined>(
-    initialData?.contentJson,
+  const [editorKeys, setEditorKeys] = useState<Partial<Record<Locale, number>>>(
+    { en: 0, fr: 0 },
   );
+  const [editorContent, setEditorContent] = useState<
+    Partial<Record<Locale, TiptapJSON>>
+  >({
+    en:
+      (initialData?.translations.en.contentJson as TiptapJSON) ??
+      EMPTY_TIPTAP_DOC,
+    fr:
+      (initialData?.translations.fr?.contentJson as TiptapJSON) ??
+      EMPTY_TIPTAP_DOC,
+  });
   const [editorDirty, setEditorDirty] = useState(false);
 
   const storageKey = `post-draft:${initialData?.id ?? "new"}`;
@@ -106,35 +119,68 @@ export function PostForm({ initialData, availableImages = [] }: PostFormProps) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(postFormSchema) as any,
     defaultValues: {
-      title: initialData?.title ?? "",
       slug: initialData?.slug ?? "",
-      excerpt: initialData?.excerpt ?? "",
       coverImageUrl: initialData?.coverImageUrl ?? "",
       status: initialData?.status ?? "draft",
       featured: initialData?.featured ?? false,
       publishedAt: initialData?.publishedAt ?? null,
       tagSlugs: initialData?.tags.map((t) => t.name) ?? [],
+      translations: {
+        en: {
+          title: initialData?.translations.en.title ?? "",
+          excerpt: initialData?.translations.en.excerpt ?? "",
+        },
+        fr: {
+          title: initialData?.translations.fr?.title ?? "",
+          excerpt: initialData?.translations.fr?.excerpt ?? "",
+        },
+      },
     },
   });
 
   const featured = watch("featured");
   const status = watch("status");
   const coverImageUrl = watch("coverImageUrl");
-  const title = watch("title");
   const slug = watch("slug");
-  const excerpt = watch("excerpt");
+  const translations = watch("translations");
+
   const { restore, clear, lastSavedAt } = usePostAutosave(
     storageKey,
     () => {
       const tagsField = (
         document.getElementById("tagSlugs") as HTMLInputElement | null
       )?.value;
+
+      const snapshotTranslations: PostAutosaveSnapshot["translations"] = {
+        en: {
+          title: translations.en.title,
+          excerpt: translations.en.excerpt,
+          contentJson:
+            editorRefs.current.en?.getContent().json ?? EMPTY_TIPTAP_DOC,
+        },
+      };
+
+      const frFields = translations.fr;
+      const frContent = editorRefs.current.fr?.getContent().json;
+      if (
+        frFields &&
+        !isTranslationEmpty({
+          title: frFields.title,
+          excerpt: frFields.excerpt,
+          contentJson: frContent,
+        })
+      ) {
+        snapshotTranslations.fr = {
+          title: frFields.title,
+          excerpt: frFields.excerpt,
+          contentJson: frContent ?? EMPTY_TIPTAP_DOC,
+        };
+      }
+
       return {
-        title,
         slug: slug ?? "",
-        excerpt,
         coverImageUrl: coverImageUrl ?? "",
-        contentJson: editorRef.current?.getContent().json ?? EMPTY_TIPTAP_DOC,
+        translations: snapshotTranslations,
         tagSlugs: (tagsField ?? "")
           .split(",")
           .map((t) => t.trim())
@@ -145,8 +191,6 @@ export function PostForm({ initialData, availableImages = [] }: PostFormProps) {
     },
     isDirty || editorDirty,
   );
-
-  console.log(errors);
 
   useEffect(() => {
     const draft = restore();
@@ -166,22 +210,40 @@ export function PostForm({ initialData, availableImages = [] }: PostFormProps) {
   function restoreDraft() {
     if (!pendingDraft) return;
     reset({
-      title: pendingDraft.title,
       slug: pendingDraft.slug,
-      excerpt: pendingDraft.excerpt,
       coverImageUrl: pendingDraft.coverImageUrl,
       status: pendingDraft.status,
       featured: pendingDraft.featured,
       publishedAt: initialData?.publishedAt ?? null,
       tagSlugs: pendingDraft.tagSlugs,
+      translations: {
+        en: {
+          title: pendingDraft.translations.en.title,
+          excerpt: pendingDraft.translations.en.excerpt,
+        },
+        fr: pendingDraft.translations.fr
+          ? {
+              title: pendingDraft.translations.fr.title,
+              excerpt: pendingDraft.translations.fr.excerpt,
+            }
+          : { title: "", excerpt: "" },
+      },
     });
     const tagInput = document.getElementById("tagSlugs") as HTMLInputElement;
     if (tagInput) {
       tagInput.value = pendingDraft.tagSlugs.join(", ");
     }
-    setEditorContent(pendingDraft.contentJson as TiptapJSON);
+    setEditorContent({
+      en: pendingDraft.translations.en.contentJson as TiptapJSON,
+      fr:
+        (pendingDraft.translations.fr?.contentJson as TiptapJSON) ??
+        EMPTY_TIPTAP_DOC,
+    });
     setEditorDirty(true);
-    setEditorKey((k) => k + 1);
+    setEditorKeys((prev) => ({
+      en: (prev.en ?? 0) + 1,
+      fr: (prev.fr ?? 0) + 1,
+    }));
     setPendingDraft(null);
   }
 
@@ -190,31 +252,74 @@ export function PostForm({ initialData, availableImages = [] }: PostFormProps) {
     setPendingDraft(null);
   }
 
-  function onTitleBlur(e: React.FocusEvent<HTMLInputElement>) {
+  function onTitleBlur(locale: Locale, e: React.FocusEvent<HTMLInputElement>) {
+    if (locale !== "en") return;
     const currentSlug = watch("slug");
     if (!currentSlug?.trim()) {
       setValue("slug", slugify(e.target.value));
     }
   }
 
-  function onSubmit(data: PostFormInput) {
-    const { json, html } = editorRef.current?.getContent() ?? {
-      json: EMPTY_TIPTAP_DOC,
-      html: "",
+  function getEditorContent(locale: Locale) {
+    return (
+      editorRefs.current[locale]?.getContent() ?? {
+        json: EMPTY_TIPTAP_DOC,
+        html: "",
+      }
+    );
+  }
+
+  function buildTranslationsPayload(
+    data: PostFormInput,
+  ): PostFormData["translations"] {
+    const enContent = getEditorContent("en");
+    const payload: PostFormData["translations"] = {
+      en: {
+        ...data.translations.en,
+        contentJson:
+          enContent.json as PostFormData["translations"]["en"]["contentJson"],
+        contentHtml: enContent.html,
+      },
     };
 
+    const frFields = data.translations.fr;
+    const frContent = getEditorContent("fr");
+    if (
+      frFields &&
+      !isTranslationEmpty({
+        title: frFields.title,
+        excerpt: frFields.excerpt,
+        contentJson: frContent.json,
+      })
+    ) {
+      payload.fr = {
+        ...frFields,
+        contentJson: frContent.json as NonNullable<
+          PostFormData["translations"]["fr"]
+        >["contentJson"],
+        contentHtml: frContent.html,
+      };
+    }
+
+    return payload;
+  }
+
+  function onSubmit(data: PostFormInput) {
     const tagsField = (
       document.getElementById("tagSlugs") as HTMLInputElement | null
     )?.value;
 
     const payload: PostFormData = {
-      ...data,
-      contentJson: json as PostFormData["contentJson"],
-      contentHtml: html,
+      slug: data.slug,
+      coverImageUrl: data.coverImageUrl,
+      status: data.status,
+      featured: data.featured,
+      publishedAt: data.publishedAt,
       tagSlugs: (tagsField ?? "")
         .split(",")
         .map((t) => t.trim())
         .filter(Boolean),
+      translations: buildTranslationsPayload(data),
     };
 
     const parsed = postSchema.safeParse(payload);
@@ -283,40 +388,70 @@ export function PostForm({ initialData, availableImages = [] }: PostFormProps) {
 
       <Card>
         <CardHeader>
+          <CardTitle>Content</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <LocaleTabs>
+            {(locale) => (
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor={`title-${locale}`}>Title</Label>
+                  <Input
+                    id={`title-${locale}`}
+                    placeholder="Post title"
+                    {...register(`translations.${locale}.title`)}
+                    onBlur={(e) => onTitleBlur(locale, e)}
+                  />
+                  {errors.translations?.[locale]?.title && (
+                    <p className="text-sm text-red-500">
+                      {errors.translations[locale]?.title?.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor={`excerpt-${locale}`}>Excerpt</Label>
+                  <Textarea
+                    id={`excerpt-${locale}`}
+                    placeholder="Short summary for cards and SEO (max 500 chars)"
+                    rows={3}
+                    {...register(`translations.${locale}.excerpt`)}
+                  />
+                  {errors.translations?.[locale]?.excerpt && (
+                    <p className="text-sm text-red-500">
+                      {errors.translations[locale]?.excerpt?.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Body</Label>
+                  <TiptapEditor
+                    key={editorKeys[locale] ?? 0}
+                    ref={(instance) => {
+                      editorRefs.current[locale] = instance;
+                    }}
+                    initialContent={editorContent[locale] ?? EMPTY_TIPTAP_DOC}
+                    availableImages={availableImages}
+                    onUpdate={() => setEditorDirty(true)}
+                  />
+                </div>
+              </div>
+            )}
+          </LocaleTabs>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle>Post details</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
-            <Input
-              id="title"
-              placeholder="Post title"
-              {...register("title")}
-              onBlur={onTitleBlur}
-            />
-            {errors.title && (
-              <p className="text-sm text-red-500">{errors.title.message}</p>
-            )}
-          </div>
-
           <div className="space-y-2">
             <Label htmlFor="slug">Slug</Label>
             <Input id="slug" placeholder="post-slug" {...register("slug")} />
             {errors.slug && (
               <p className="text-sm text-red-500">{errors.slug.message}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="excerpt">Excerpt</Label>
-            <Textarea
-              id="excerpt"
-              placeholder="Short summary for cards and SEO (max 500 chars)"
-              rows={3}
-              {...register("excerpt")}
-            />
-            {errors.excerpt && (
-              <p className="text-sm text-red-500">{errors.excerpt.message}</p>
             )}
           </div>
 
@@ -375,21 +510,6 @@ export function PostForm({ initialData, availableImages = [] }: PostFormProps) {
               }}
             />
           </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Content</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <TiptapEditor
-            key={editorKey}
-            ref={editorRef}
-            initialContent={editorContent ?? EMPTY_TIPTAP_DOC}
-            availableImages={availableImages}
-            onUpdate={() => setEditorDirty(true)}
-          />
         </CardContent>
       </Card>
 

@@ -1,4 +1,5 @@
 import { and, asc, desc, eq } from "drizzle-orm";
+import { alias } from "drizzle-orm/pg-core";
 import type { Locale } from "@/i18n/routing";
 import { routing } from "@/i18n/routing";
 import { db } from "@/lib/db";
@@ -8,10 +9,52 @@ import {
   portfolioItems,
   portfolioTranslations,
 } from "@/lib/db/schema";
+import { coalesceTranslation, DEFAULT_LOCALE } from "@/lib/db/translations";
+import type { PortfolioTranslationData } from "@/lib/validators/portfolio";
+
+const portfolioT = portfolioTranslations;
+const portfolioTEn = alias(portfolioTranslations, "portfolio_translations_en");
+const imageT = imageTranslations;
+const imageTEn = alias(imageTranslations, "image_translations_en");
+
+function portfolioTranslationSelect() {
+  return {
+    title: coalesceTranslation(portfolioT.title, portfolioTEn.title),
+    shortDescription: coalesceTranslation(
+      portfolioT.shortDescription,
+      portfolioTEn.shortDescription,
+    ),
+    fullDescription: coalesceTranslation(
+      portfolioT.fullDescription,
+      portfolioTEn.fullDescription,
+    ),
+  };
+}
+
+function portfolioTranslationJoins(locale: Locale) {
+  return {
+    innerJoinEn: {
+      table: portfolioTEn,
+      on: and(
+        eq(portfolioTEn.portfolioId, portfolioItems.id),
+        eq(portfolioTEn.locale, DEFAULT_LOCALE),
+      ),
+    },
+    leftJoinLocale: {
+      table: portfolioT,
+      on: and(
+        eq(portfolioT.portfolioId, portfolioItems.id),
+        eq(portfolioT.locale, locale),
+      ),
+    },
+  };
+}
 
 export async function getPublishedPortfolioItems(
   locale: Locale = routing.defaultLocale,
 ) {
+  const joins = portfolioTranslationJoins(locale);
+
   const items = await db
     .select({
       id: portfolioItems.id,
@@ -25,18 +68,11 @@ export async function getPublishedPortfolioItems(
       status: portfolioItems.status,
       startDate: portfolioItems.startDate,
       endDate: portfolioItems.endDate,
-      title: portfolioTranslations.title,
-      shortDescription: portfolioTranslations.shortDescription,
-      fullDescription: portfolioTranslations.fullDescription,
+      ...portfolioTranslationSelect(),
     })
     .from(portfolioItems)
-    .innerJoin(
-      portfolioTranslations,
-      and(
-        eq(portfolioTranslations.portfolioId, portfolioItems.id),
-        eq(portfolioTranslations.locale, locale),
-      ),
-    )
+    .innerJoin(joins.innerJoinEn.table, joins.innerJoinEn.on)
+    .leftJoin(joins.leftJoinLocale.table, joins.leftJoinLocale.on)
     .where(eq(portfolioItems.status, "published"))
     .orderBy(desc(portfolioItems.featured), asc(portfolioItems.sortOrder));
 
@@ -47,6 +83,8 @@ export async function getPortfolioBySlug(
   slug: string,
   locale: Locale = routing.defaultLocale,
 ) {
+  const joins = portfolioTranslationJoins(locale);
+
   const rows = await db
     .select({
       id: portfolioItems.id,
@@ -60,18 +98,11 @@ export async function getPortfolioBySlug(
       status: portfolioItems.status,
       startDate: portfolioItems.startDate,
       endDate: portfolioItems.endDate,
-      title: portfolioTranslations.title,
-      shortDescription: portfolioTranslations.shortDescription,
-      fullDescription: portfolioTranslations.fullDescription,
+      ...portfolioTranslationSelect(),
     })
     .from(portfolioItems)
-    .innerJoin(
-      portfolioTranslations,
-      and(
-        eq(portfolioTranslations.portfolioId, portfolioItems.id),
-        eq(portfolioTranslations.locale, locale),
-      ),
-    )
+    .innerJoin(joins.innerJoinEn.table, joins.innerJoinEn.on)
+    .leftJoin(joins.leftJoinLocale.table, joins.leftJoinLocale.on)
     .where(
       and(
         eq(portfolioItems.slug, slug),
@@ -83,7 +114,6 @@ export async function getPortfolioBySlug(
   const item = rows[0];
   if (!item) return null;
 
-  // Fetch images with translations
   const itemImages = await db
     .select({
       id: images.id,
@@ -91,15 +121,16 @@ export async function getPortfolioBySlug(
       sortOrder: images.sortOrder,
       width: images.width,
       height: images.height,
-      alt: imageTranslations.alt,
+      alt: coalesceTranslation(imageT.alt, imageTEn.alt),
     })
     .from(images)
+    .innerJoin(
+      imageTEn,
+      and(eq(imageTEn.imageId, images.id), eq(imageTEn.locale, DEFAULT_LOCALE)),
+    )
     .leftJoin(
-      imageTranslations,
-      and(
-        eq(imageTranslations.imageId, images.id),
-        eq(imageTranslations.locale, locale),
-      ),
+      imageT,
+      and(eq(imageT.imageId, images.id), eq(imageT.locale, locale)),
     )
     .where(eq(images.portfolioId, item.id))
     .orderBy(asc(images.sortOrder));
@@ -118,7 +149,6 @@ export async function getAllPublishedSlugs() {
   return items.map((i) => ({ slug: i.slug }));
 }
 
-// For admin: get all items with English translations
 export async function getAllPortfolioItemsForAdmin() {
   return db
     .select({
@@ -143,13 +173,12 @@ export async function getAllPortfolioItemsForAdmin() {
       portfolioTranslations,
       and(
         eq(portfolioTranslations.portfolioId, portfolioItems.id),
-        eq(portfolioTranslations.locale, "en"),
+        eq(portfolioTranslations.locale, DEFAULT_LOCALE),
       ),
     )
     .orderBy(asc(portfolioItems.sortOrder));
 }
 
-// All images with English alt text, for admin views (image grid + image picker)
 export async function getAllImagesForAdmin() {
   return db
     .select({
@@ -168,40 +197,56 @@ export async function getAllImagesForAdmin() {
       imageTranslations,
       and(
         eq(imageTranslations.imageId, images.id),
-        eq(imageTranslations.locale, "en"),
+        eq(imageTranslations.locale, DEFAULT_LOCALE),
       ),
     )
     .orderBy(desc(images.createdAt));
 }
 
-export async function getPortfolioItemForEdit(id: string) {
-  const rows = await db
-    .select({
-      id: portfolioItems.id,
-      slug: portfolioItems.slug,
-      thumbnailUrl: portfolioItems.thumbnailUrl,
-      techStack: portfolioItems.techStack,
-      liveUrl: portfolioItems.liveUrl,
-      githubUrl: portfolioItems.githubUrl,
-      featured: portfolioItems.featured,
-      sortOrder: portfolioItems.sortOrder,
-      status: portfolioItems.status,
-      startDate: portfolioItems.startDate,
-      endDate: portfolioItems.endDate,
-      title: portfolioTranslations.title,
-      shortDescription: portfolioTranslations.shortDescription,
-      fullDescription: portfolioTranslations.fullDescription,
-    })
-    .from(portfolioItems)
-    .innerJoin(
-      portfolioTranslations,
-      and(
-        eq(portfolioTranslations.portfolioId, portfolioItems.id),
-        eq(portfolioTranslations.locale, "en"),
-      ),
-    )
-    .where(eq(portfolioItems.id, id))
-    .limit(1);
+export type PortfolioEditTranslations = {
+  en: PortfolioTranslationData;
+  fr?: PortfolioTranslationData;
+};
 
-  return rows[0] ?? null;
+export async function getPortfolioItemForEdit(id: string) {
+  const item = await db.query.portfolioItems.findFirst({
+    where: eq(portfolioItems.id, id),
+    with: { translations: true },
+  });
+
+  if (!item) return null;
+
+  const byLocale = Object.fromEntries(
+    item.translations.map((t) => [
+      t.locale,
+      {
+        title: t.title,
+        shortDescription: t.shortDescription,
+        fullDescription: t.fullDescription,
+      },
+    ]),
+  ) as Record<string, PortfolioTranslationData>;
+
+  const en = byLocale.en;
+  if (!en) return null;
+
+  const translations: PortfolioEditTranslations = {
+    en,
+    ...(byLocale.fr ? { fr: byLocale.fr } : {}),
+  };
+
+  return {
+    id: item.id,
+    slug: item.slug,
+    thumbnailUrl: item.thumbnailUrl,
+    techStack: item.techStack,
+    liveUrl: item.liveUrl,
+    githubUrl: item.githubUrl,
+    featured: item.featured,
+    sortOrder: item.sortOrder,
+    status: item.status,
+    startDate: item.startDate,
+    endDate: item.endDate,
+    translations,
+  };
 }

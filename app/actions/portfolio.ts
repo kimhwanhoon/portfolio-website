@@ -4,9 +4,15 @@ import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { and, eq, notInArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { routing } from "@/i18n/routing";
 import { requireAdmin } from "@/lib/auth/admin";
 import { db } from "@/lib/db";
-import { images, portfolioItems, portfolioTranslations } from "@/lib/db/schema";
+import { images, portfolioItems } from "@/lib/db/schema";
+import {
+  isTranslationEmpty,
+  translationEntries,
+  upsertPortfolioTranslation,
+} from "@/lib/db/translations";
 import { R2_BUCKET, r2Client } from "@/lib/r2/client";
 import { portfolioSchema } from "@/lib/validators/portfolio";
 
@@ -21,8 +27,29 @@ function slugify(text: string): string {
 
 function revalidateAll() {
   revalidatePath("/admin");
-  revalidatePath("/en");
+  for (const locale of routing.locales) {
+    revalidatePath(`/${locale}`);
+  }
   revalidatePath("/");
+}
+
+function normalizePortfolioPayload(data: unknown) {
+  const validated = portfolioSchema.parse(data);
+  const { fr, ...rest } = validated.translations;
+  const translations = {
+    en: validated.translations.en,
+    ...(isTranslationEmpty(fr) ? {} : { fr }),
+  };
+  return { ...validated, translations };
+}
+
+async function syncPortfolioTranslations(
+  portfolioId: string,
+  translations: ReturnType<typeof normalizePortfolioPayload>["translations"],
+) {
+  for (const [locale, values] of translationEntries(translations)) {
+    await upsertPortfolioTranslation(portfolioId, locale, values);
+  }
 }
 
 /**
@@ -41,7 +68,6 @@ async function syncPortfolioImages(portfolioId: string, imageIds: string[]) {
     return;
   }
 
-  // Unlink currently-attached images that are not in the new selection.
   await db
     .update(images)
     .set({ portfolioId: null, sortOrder: 0 })
@@ -49,8 +75,6 @@ async function syncPortfolioImages(portfolioId: string, imageIds: string[]) {
       and(eq(images.portfolioId, portfolioId), notInArray(images.id, imageIds)),
     );
 
-  // Attach + order the selected images. Done one-by-one because sortOrder
-  // differs per row; row count is bounded by gallery size (small).
   for (let i = 0; i < imageIds.length; i++) {
     await db
       .update(images)
@@ -61,9 +85,9 @@ async function syncPortfolioImages(portfolioId: string, imageIds: string[]) {
 
 export async function createPortfolio(data: unknown, imageIds?: string[]) {
   await requireAdmin();
-  const validated = portfolioSchema.parse(data);
+  const validated = normalizePortfolioPayload(data);
 
-  const slug = validated.slug || slugify(validated.title);
+  const slug = validated.slug || slugify(validated.translations.en.title);
 
   const [inserted] = await db
     .insert(portfolioItems)
@@ -81,13 +105,7 @@ export async function createPortfolio(data: unknown, imageIds?: string[]) {
     })
     .returning({ id: portfolioItems.id });
 
-  await db.insert(portfolioTranslations).values({
-    portfolioId: inserted.id,
-    locale: "en",
-    title: validated.title,
-    shortDescription: validated.shortDescription,
-    fullDescription: validated.fullDescription,
-  });
+  await syncPortfolioTranslations(inserted.id, validated.translations);
 
   if (imageIds) {
     await syncPortfolioImages(inserted.id, imageIds);
@@ -103,11 +121,10 @@ export async function updatePortfolio(
   imageIds?: string[],
 ) {
   await requireAdmin();
-  const validated = portfolioSchema.parse(data);
+  const validated = normalizePortfolioPayload(data);
 
-  const slug = validated.slug || slugify(validated.title);
+  const slug = validated.slug || slugify(validated.translations.en.title);
 
-  // Update base item
   await db
     .update(portfolioItems)
     .set({
@@ -125,32 +142,7 @@ export async function updatePortfolio(
     })
     .where(eq(portfolioItems.id, id));
 
-  // Upsert English translation
-  const existing = await db
-    .select()
-    .from(portfolioTranslations)
-    .where(eq(portfolioTranslations.portfolioId, id))
-    .limit(1);
-
-  if (existing.length > 0) {
-    await db
-      .update(portfolioTranslations)
-      .set({
-        title: validated.title,
-        shortDescription: validated.shortDescription,
-        fullDescription: validated.fullDescription,
-        updatedAt: new Date(),
-      })
-      .where(eq(portfolioTranslations.portfolioId, id));
-  } else {
-    await db.insert(portfolioTranslations).values({
-      portfolioId: id,
-      locale: "en",
-      title: validated.title,
-      shortDescription: validated.shortDescription,
-      fullDescription: validated.fullDescription,
-    });
-  }
+  await syncPortfolioTranslations(id, validated.translations);
 
   if (imageIds) {
     await syncPortfolioImages(id, imageIds);
@@ -179,7 +171,6 @@ export async function deletePortfolio(id: string) {
     }
   }
 
-  // Cascade deletes translations and image records
   await db.delete(portfolioItems).where(eq(portfolioItems.id, id));
 
   revalidateAll();

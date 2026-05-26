@@ -2,15 +2,22 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const AUTOSAVE_VERSION = 1;
+const AUTOSAVE_VERSION = 2;
 const DEFAULT_INTERVAL_MS = 10_000;
 
-export type PostAutosaveSnapshot = {
+export type PostTranslationAutosave = {
   title: string;
-  slug: string;
   excerpt: string;
-  coverImageUrl: string;
   contentJson: unknown;
+};
+
+export type PostAutosaveSnapshot = {
+  slug: string;
+  coverImageUrl: string;
+  translations: {
+    en: PostTranslationAutosave;
+    fr?: PostTranslationAutosave;
+  };
   tagSlugs: string[];
   status: "draft" | "published";
   featured: boolean;

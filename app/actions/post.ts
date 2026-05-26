@@ -1,6 +1,6 @@
 "use server";
 
-import { and, eq, sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { routing } from "@/i18n/routing";
@@ -9,10 +9,13 @@ import { processPostContent } from "@/lib/blog/content";
 import { db } from "@/lib/db";
 import { isUniqueViolation } from "@/lib/db/errors";
 import type { TiptapJSON } from "@/lib/db/schema";
-import { posts, postTags, postTranslations, tags } from "@/lib/db/schema";
-import { postSchema } from "@/lib/validators/post";
-
-const POST_LOCALE = "en";
+import { posts, postTags, tags } from "@/lib/db/schema";
+import {
+  isTranslationEmpty,
+  translationEntries,
+  upsertPostTranslation,
+} from "@/lib/db/translations";
+import { type PostTranslationData, postSchema } from "@/lib/validators/post";
 
 function slugify(text: string): string {
   return text
@@ -118,14 +121,54 @@ async function syncPostTags(postId: string, tagSlugs: string[]) {
   }
 }
 
+function normalizePostPayload(data: unknown) {
+  const validated = postSchema.parse(data);
+  const { fr, ...rest } = validated.translations;
+  const translations = {
+    en: validated.translations.en,
+    ...(isTranslationEmpty(fr) ? {} : { fr }),
+  };
+  return { ...validated, translations };
+}
+
+async function syncPostTranslations(
+  postId: string,
+  translations: ReturnType<typeof normalizePostPayload>["translations"],
+) {
+  for (const [locale, values] of translationEntries(translations)) {
+    await upsertPostTranslation(postId, locale, values);
+  }
+}
+
+async function processTranslation(translation: PostTranslationData) {
+  const { contentHtml } = await processPostContent(
+    translation.contentJson as TiptapJSON,
+    translation.contentHtml,
+  );
+  return { ...translation, contentHtml };
+}
+
 export async function createPost(data: unknown) {
   await requireAdmin();
-  const validated = postSchema.parse(data);
-  const slug = resolveSlug(validated);
-  const { contentHtml, readingMinutes } = await processPostContent(
-    validated.contentJson as TiptapJSON,
-    validated.contentHtml,
+  const validated = normalizePostPayload(data);
+  const slug = resolveSlug({
+    slug: validated.slug,
+    title: validated.translations.en.title,
+  });
+
+  const enTranslation = await processTranslation(validated.translations.en);
+  const { readingMinutes } = await processPostContent(
+    enTranslation.contentJson as TiptapJSON,
+    enTranslation.contentHtml,
   );
+
+  const translationsToSync: ReturnType<
+    typeof normalizePostPayload
+  >["translations"] = { en: enTranslation };
+
+  if (validated.translations.fr) {
+    translationsToSync.fr = await processTranslation(validated.translations.fr);
+  }
 
   const publishedAt =
     validated.status === "published"
@@ -158,14 +201,7 @@ export async function createPost(data: unknown) {
     await setExclusiveFeatured(inserted.id);
   }
 
-  await db.insert(postTranslations).values({
-    postId: inserted.id,
-    locale: POST_LOCALE,
-    title: validated.title,
-    excerpt: validated.excerpt,
-    contentJson: validated.contentJson as TiptapJSON,
-    contentHtml,
-  });
+  await syncPostTranslations(inserted.id, translationsToSync);
 
   await syncPostTags(inserted.id, validated.tagSlugs);
 
@@ -175,8 +211,11 @@ export async function createPost(data: unknown) {
 
 export async function updatePost(id: string, data: unknown) {
   await requireAdmin();
-  const validated = postSchema.parse(data);
-  const slug = resolveSlug(validated);
+  const validated = normalizePostPayload(data);
+  const slug = resolveSlug({
+    slug: validated.slug,
+    title: validated.translations.en.title,
+  });
 
   const existingPost = await db.query.posts.findFirst({
     where: eq(posts.id, id),
@@ -187,10 +226,20 @@ export async function updatePost(id: string, data: unknown) {
   }
 
   const oldSlug = existingPost.slug;
-  const { contentHtml, readingMinutes } = await processPostContent(
-    validated.contentJson as TiptapJSON,
-    validated.contentHtml,
+
+  const enTranslation = await processTranslation(validated.translations.en);
+  const { readingMinutes } = await processPostContent(
+    enTranslation.contentJson as TiptapJSON,
+    enTranslation.contentHtml,
   );
+
+  const translationsToSync: ReturnType<
+    typeof normalizePostPayload
+  >["translations"] = { en: enTranslation };
+
+  if (validated.translations.fr) {
+    translationsToSync.fr = await processTranslation(validated.translations.fr);
+  }
 
   const publishedAt =
     validated.status === "published"
@@ -223,43 +272,7 @@ export async function updatePost(id: string, data: unknown) {
     throw e;
   }
 
-  const existingTranslation = await db
-    .select()
-    .from(postTranslations)
-    .where(
-      and(
-        eq(postTranslations.postId, id),
-        eq(postTranslations.locale, POST_LOCALE),
-      ),
-    )
-    .limit(1);
-
-  if (existingTranslation.length > 0) {
-    await db
-      .update(postTranslations)
-      .set({
-        title: validated.title,
-        excerpt: validated.excerpt,
-        contentJson: validated.contentJson as TiptapJSON,
-        contentHtml,
-        updatedAt: new Date(),
-      })
-      .where(
-        and(
-          eq(postTranslations.postId, id),
-          eq(postTranslations.locale, POST_LOCALE),
-        ),
-      );
-  } else {
-    await db.insert(postTranslations).values({
-      postId: id,
-      locale: POST_LOCALE,
-      title: validated.title,
-      excerpt: validated.excerpt,
-      contentJson: validated.contentJson as TiptapJSON,
-      contentHtml,
-    });
-  }
+  await syncPostTranslations(id, translationsToSync);
 
   await syncPostTags(id, validated.tagSlugs);
 

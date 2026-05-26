@@ -33,44 +33,27 @@ function hasNonEmptyContent(doc: TiptapJSON): boolean {
   return content.some(nodeHasContent);
 }
 
-/** Client form resolver — content is read from Tiptap at submit time. */
-export const postFormSchema = z.object({
+const postTranslationFieldsSchema = z.object({
   title: z
     .string()
     .min(1, "Title is required")
     .max(255, "Title must be less than 255 characters"),
-  slug: z.string().max(255, "Slug must be less than 255 characters").optional(),
   excerpt: z
     .string()
     .min(1, "Excerpt is required")
     .max(500, "Excerpt must be less than 500 characters"),
-  coverImageUrl: z.string().url().optional().or(z.literal("")),
-  status: z.enum(["draft", "published"]).default("draft"),
-  featured: z.boolean().default(false),
-  publishedAt: z.coerce.date().optional().nullable(),
-  tagSlugs: z
-    .array(z.string().min(1).max(50))
-    .max(10, "Maximum 10 tags allowed")
-    .default([]),
 });
 
-export type PostFormInput = z.infer<typeof postFormSchema>;
-
-export const postSchema = z.object({
-  title: z
-    .string()
-    .min(1, "Title is required")
-    .max(255, "Title must be less than 255 characters"),
-  slug: z.string().max(255, "Slug must be less than 255 characters").optional(),
-  excerpt: z
-    .string()
-    .min(1, "Excerpt is required")
-    .max(500, "Excerpt must be less than 500 characters"),
-  coverImageUrl: z.string().url().optional().or(z.literal("")),
+const postTranslationSchema = postTranslationFieldsSchema.extend({
   contentJson: tiptapDocSchema.refine(hasNonEmptyContent, {
     message: "Post content is required",
   }),
   contentHtml: z.string().min(1, "Post content is required"),
+});
+
+const postBaseSchema = z.object({
+  slug: z.string().max(255, "Slug must be less than 255 characters").optional(),
+  coverImageUrl: z.string().url().optional().or(z.literal("")),
   status: z.enum(["draft", "published"]).default("draft"),
   featured: z.boolean().default(false),
   publishedAt: z.coerce.date().optional().nullable(),
@@ -80,4 +63,32 @@ export const postSchema = z.object({
     .default([]),
 });
 
+const postTranslationsSchema = z.object({
+  en: postTranslationSchema,
+  fr: postTranslationSchema.optional(),
+});
+
+const postTranslationFormFieldsSchema = z.object({
+  title: z.string().max(255),
+  excerpt: z.string().max(500),
+});
+
+const postTranslationsFormSchema = z.object({
+  en: postTranslationFieldsSchema,
+  fr: postTranslationFormFieldsSchema.optional(),
+});
+
+/** Client form resolver — Tiptap content is merged at submit time. */
+export const postFormSchema = postBaseSchema.extend({
+  translations: postTranslationsFormSchema,
+});
+
+export type PostFormInput = z.infer<typeof postFormSchema>;
+
+export const postSchema = postBaseSchema.extend({
+  translations: postTranslationsSchema,
+});
+
+export type PostTranslationData = z.infer<typeof postTranslationSchema>;
+export type PostTranslationFields = z.infer<typeof postTranslationFieldsSchema>;
 export type PostFormData = z.infer<typeof postSchema>;
