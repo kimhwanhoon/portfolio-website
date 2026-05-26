@@ -19,7 +19,7 @@ export async function AboutSection({ locale }: AboutSectionProps) {
   const bio = t.raw("bio") as Record<string, string>;
 
   return (
-    <SectionWrapper id="about" className="bg-zinc-50">
+    <SectionWrapper id="about" className="bg-muted/40">
       <div className="grid gap-10 md:grid-cols-2 md:gap-16">
         <FadeIn direction="right">
           <div className="space-y-4">

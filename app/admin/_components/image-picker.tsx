@@ -150,7 +150,7 @@ export function ImagePicker({
                     "rounded-full p-0.5",
                     thumbnailUrl === img.url
                       ? "bg-yellow-400 text-white"
-                      : "bg-white/80 text-zinc-600 hover:bg-yellow-400 hover:text-white",
+                      : "bg-background/80 text-foreground backdrop-blur-sm hover:bg-yellow-400 hover:text-white",
                   )}
                   title="Set as thumbnail"
                 >
@@ -161,7 +161,7 @@ export function ImagePicker({
                   onClick={() =>
                     onSelectionChange(selectedIds.filter((id) => id !== img.id))
                   }
-                  className="rounded-full bg-white/80 p-0.5 text-zinc-600 hover:bg-red-500 hover:text-white"
+                  className="rounded-full bg-background/80 p-0.5 text-foreground backdrop-blur-sm hover:bg-red-500 hover:text-white"
                   title="Remove from gallery"
                 >
                   <IconX className="size-3.5" />

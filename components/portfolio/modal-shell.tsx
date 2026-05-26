@@ -29,7 +29,7 @@ export function ModalShell({ children }: ModalShellProps) {
             "max-sm:inset-0 max-sm:h-full max-sm:w-full max-sm:rounded-none",
             "sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2",
             "sm:w-full sm:max-w-3xl sm:max-h-[90vh] sm:rounded-xl",
-            "overflow-y-auto bg-white p-6 shadow-xl",
+            "overflow-y-auto bg-card p-6 shadow-xl",
             "data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95",
             "data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
           )}

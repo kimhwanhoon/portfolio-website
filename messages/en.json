@@ -80,5 +80,10 @@
   },
   "common": {
     "skipToContent": "Skip to content"
+  },
+  "theme": {
+    "toggle": "Toggle theme",
+    "light": "Switch to light mode",
+    "dark": "Switch to dark mode"
   }
 }
