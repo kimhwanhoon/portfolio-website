@@ -5,6 +5,7 @@ import { routing } from "@/i18n/routing";
 import { db } from "@/lib/db";
 import { posts, postTags, postTranslations, tags } from "@/lib/db/schema";
 import { coalesceTranslation, DEFAULT_LOCALE } from "@/lib/db/translations";
+import type { TranslationsFor } from "@/lib/i18n/zod-helpers";
 import type { PostTranslationFields } from "@/lib/validators/post";
 
 export type PostTag = { slug: string; name: string };
@@ -331,10 +332,10 @@ export async function getAllPostsForAdmin() {
   return attachTagsToPosts(rows);
 }
 
-export type PostEditTranslations = {
-  en: PostTranslationFields & { contentJson: Record<string, unknown> };
-  fr?: PostTranslationFields & { contentJson: Record<string, unknown> };
+export type PostEditTranslation = PostTranslationFields & {
+  contentJson: Record<string, unknown>;
 };
+export type PostEditTranslations = TranslationsFor<PostEditTranslation>;
 
 export async function getPostForEdit(id: string) {
   const item = await db.query.posts.findFirst({
@@ -353,18 +354,15 @@ export async function getPostForEdit(id: string) {
         contentJson: t.contentJson as Record<string, unknown>,
       },
     ]),
-  ) as Record<
-    string,
-    PostTranslationFields & { contentJson: Record<string, unknown> }
-  >;
+  ) as Partial<Record<Locale, PostEditTranslation>>;
 
-  const en = byLocale.en;
-  if (!en) return null;
+  const defaultTranslation = byLocale[routing.defaultLocale];
+  if (!defaultTranslation) return null;
 
-  const translations: PostEditTranslations = {
-    en,
-    ...(byLocale.fr ? { fr: byLocale.fr } : {}),
-  };
+  const translations = {
+    ...byLocale,
+    [routing.defaultLocale]: defaultTranslation,
+  } as PostEditTranslations;
 
   const tagRows = await db
     .select({ slug: tags.slug, name: tags.name })

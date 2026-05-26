@@ -1,73 +1,73 @@
 {
   "meta": {
-    "title": "Kim Hwanhoon | Frontend Developer",
+    "title": "Kim Hwanhoon | Développeur Frontend",
     "titleTemplate": "{title} | Kim Hwanhoon",
-    "description": "Frontend developer portfolio — I craft web experiences that just work."
+    "description": "Portfolio de développeur frontend — Je conçois des expériences web qui fonctionnent, tout simplement."
   },
   "nav": {
     "portfolio": "Portfolio",
     "blog": "Blog",
-    "about": "About",
+    "about": "À propos",
     "contact": "Contact",
-    "openMenu": "Open menu",
-    "closeMenu": "Close menu"
+    "openMenu": "Ouvrir le menu",
+    "closeMenu": "Fermer le menu"
   },
   "hero": {
-    "label": "Frontend Developer",
+    "label": "Développeur Frontend",
     "name": "Kim Hwanhoon",
-    "tagline": "I craft web experiences that just work.",
-    "cta": "Get in Touch",
+    "tagline": "Je conçois des expériences web qui fonctionnent, tout simplement.",
+    "cta": "Me contacter",
     "linkedin": "LinkedIn",
     "github": "GitHub"
   },
   "portfolio": {
-    "heading": "Selected Work",
-    "empty": "No projects to show yet. Check back soon.",
-    "noImage": "No image"
+    "heading": "Projets sélectionnés",
+    "empty": "Aucun projet à afficher pour le moment. Revenez bientôt.",
+    "noImage": "Aucune image"
   },
   "about": {
-    "heading": "About",
+    "heading": "À propos",
     "bio": {
-      "0": "I'm a frontend developer who focuses on building clean, performant, and accessible web applications. I care deeply about user experience and believe that great interfaces should feel invisible.",
-      "1": "With experience across the full JavaScript ecosystem, I enjoy turning complex requirements into simple, elegant solutions. When I'm not coding, I'm exploring new tools and contributing to the developer community."
+      "0": "Je suis développeur frontend et je me concentre sur la création d'applications web épurées, performantes et accessibles. J'accorde une grande importance à l'expérience utilisateur et je crois qu'une bonne interface doit se faire oublier.",
+      "1": "Fort d'une expérience couvrant l'ensemble de l'écosystème JavaScript, j'aime transformer des exigences complexes en solutions simples et élégantes. Quand je ne code pas, j'explore de nouveaux outils et contribue à la communauté des développeurs."
     },
-    "skillsHeading": "Skills & Technologies",
-    "learnMore": "Learn more about me"
+    "skillsHeading": "Compétences & technologies",
+    "learnMore": "En savoir plus sur moi"
   },
   "aboutPage": {
-    "title": "About",
+    "title": "À propos",
     "extendedBio": {
-      "0": "I'm a frontend developer who focuses on building clean, performant, and accessible web applications. I care deeply about user experience and believe that great interfaces should feel invisible.",
-      "1": "With experience across the full JavaScript ecosystem, I enjoy turning complex requirements into simple, elegant solutions. I'm most productive when working at the intersection of design and engineering — translating ideas into polished, production-ready interfaces.",
-      "2": "When I'm not coding, I'm exploring new tools, contributing to the developer community, and staying curious about what's next in the web platform."
+      "0": "Je suis développeur frontend et je me concentre sur la création d'applications web épurées, performantes et accessibles. J'accorde une grande importance à l'expérience utilisateur et je crois qu'une bonne interface doit se faire oublier.",
+      "1": "Fort d'une expérience couvrant l'ensemble de l'écosystème JavaScript, j'aime transformer des exigences complexes en solutions simples et élégantes. Je suis le plus productif à l'intersection du design et de l'ingénierie — en transformant des idées en interfaces soignées, prêtes pour la production.",
+      "2": "Quand je ne code pas, j'explore de nouveaux outils, je contribue à la communauté des développeurs et je reste curieux des prochaines évolutions de la plateforme web."
     },
-    "experienceHeading": "Experience",
+    "experienceHeading": "Expérience",
     "timeline": {
       "0": {
-        "date": "Dec 2024 — Present",
-        "title": "Frontend Engineer",
+        "date": "Déc. 2024 — Aujourd'hui",
+        "title": "Ingénieur Frontend",
         "company": "GetVocal",
-        "description": "Frontend engineer on an AI-powered voice & chat agent SaaS platform. Shipped 1,300+ commits and 200+ PRs across a React/TypeScript monorepo, owning core subsystems end-to-end — including a visual conversation designer, bundle versioning, webcall audio pipeline, and auth infrastructure. Led framework upgrades (React 19, Vite), performance refactors, and design system contributions."
+        "description": "Ingénieur frontend sur une plateforme SaaS d'agents conversationnels vocaux et textuels propulsés par l'IA. Plus de 1 300 commits et 200 PRs livrés au sein d'un monorepo React/TypeScript, avec la responsabilité bout en bout de sous-systèmes clés — designer de conversations visuel, versioning des bundles, pipeline audio webcall et infrastructure d'authentification. Pilote des montées de version (React 19, Vite), des refactorings de performance et des contributions au design system."
       },
       "1": {
-        "date": "May 2023 — Nov 2023",
-        "title": "Coding Bootcamp Graduate",
-        "company": "Team Sparta · Seoul, Korea",
-        "description": "Completed an intensive full-stack bootcamp covering HTML, CSS, JavaScript, React, Redux, and React Query. Built team projects with 5 collaborators. Self-learned Next.js App Router and foundational backend development after graduating."
+        "date": "Mai 2023 — Nov. 2023",
+        "title": "Diplômé d'un bootcamp de développement",
+        "company": "Team Sparta · Séoul, Corée",
+        "description": "Bootcamp full-stack intensif couvrant HTML, CSS, JavaScript, React, Redux et React Query. Projets d'équipe réalisés avec 5 collaborateurs. Auto-formation au Next.js App Router et aux fondamentaux du développement backend après l'obtention du diplôme."
       },
       "2": {
-        "date": "Aug 2019 — Aug 2022",
-        "title": "Travel Agent",
-        "company": "Sally Tour · Seoul, Korea",
-        "description": "Handled B2B & B2C tour sales, attracting overseas customers and producing tours. Managed homepage production, marketing, and automated websites using Wix and scripting tools."
+        "date": "Août 2019 — Août 2022",
+        "title": "Agent de voyage",
+        "company": "Sally Tour · Séoul, Corée",
+        "description": "Gestion des ventes de voyages B2B et B2C, prospection de clients étrangers et production de circuits. Réalisation du site web, marketing et automatisation de sites via Wix et des outils de scripting."
       }
     },
-    "backToHome": "Back to home"
+    "backToHome": "Retour à l'accueil"
   },
   "contact": {
-    "heading": "Let's Connect",
-    "description": "I'm always open to new opportunities and interesting conversations. Feel free to reach out.",
-    "email": "Email Me",
+    "heading": "Restons en contact",
+    "description": "Je suis toujours ouvert à de nouvelles opportunités et à des échanges intéressants. N'hésitez pas à me contacter.",
+    "email": "M'envoyer un e-mail",
     "linkedin": "LinkedIn",
     "github": "GitHub"
   },
@@ -75,38 +75,38 @@
     "copyright": "© {year} Kim Hwanhoon"
   },
   "detail": {
-    "backToPortfolio": "Back to portfolio",
-    "liveSite": "Live Site",
-    "sourceCode": "Source Code"
+    "backToPortfolio": "Retour au portfolio",
+    "liveSite": "Site en ligne",
+    "sourceCode": "Code source"
   },
   "common": {
-    "skipToContent": "Skip to content"
+    "skipToContent": "Aller au contenu"
   },
   "blog": {
     "heading": "Blog",
-    "subtitle": "Thoughts on frontend development, tools, and craft.",
-    "featuredLabel": "Featured",
-    "readMin": "{minutes} min read",
-    "emptyState": "No posts yet. Check back soon.",
-    "emptyForTag": "No posts with this tag yet.",
-    "filterByTag": "Filter posts by tag",
-    "paginationLabel": "Blog pagination",
-    "allTags": "All",
-    "backToBlog": "Back to blog",
-    "publishedOn": "Published {date}",
-    "noCover": "No cover image",
-    "previous": "Previous",
-    "next": "Next",
-    "page": "Page {current} of {total}",
-    "draftAvailable": "Draft from {time} available",
-    "restoreDraft": "Restore",
-    "discardDraft": "Discard",
-    "draftSaved": "Saved {time}",
-    "slugConflict": "A post with this slug already exists. Choose a different slug."
+    "subtitle": "Réflexions sur le développement frontend, les outils et le métier.",
+    "featuredLabel": "À la une",
+    "readMin": "{minutes} min de lecture",
+    "emptyState": "Aucun article pour le moment. Revenez bientôt.",
+    "emptyForTag": "Aucun article avec ce tag pour le moment.",
+    "filterByTag": "Filtrer les articles par tag",
+    "paginationLabel": "Pagination du blog",
+    "allTags": "Tous",
+    "backToBlog": "Retour au blog",
+    "publishedOn": "Publié le {date}",
+    "noCover": "Aucune image de couverture",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "page": "Page {current} sur {total}",
+    "draftAvailable": "Brouillon disponible depuis {time}",
+    "restoreDraft": "Restaurer",
+    "discardDraft": "Ignorer",
+    "draftSaved": "Enregistré {time}",
+    "slugConflict": "Un article avec ce slug existe déjà. Veuillez choisir un autre slug."
   },
   "theme": {
-    "toggle": "Toggle theme",
-    "light": "Switch to light mode",
-    "dark": "Switch to dark mode"
+    "toggle": "Changer de thème",
+    "light": "Passer en mode clair",
+    "dark": "Passer en mode sombre"
   }
 }

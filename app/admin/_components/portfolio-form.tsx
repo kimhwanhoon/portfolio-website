@@ -11,8 +11,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import type { Locale } from "@/i18n/routing";
-import { isTranslationEmpty } from "@/lib/i18n/translation-utils";
+import { type Locale, routing } from "@/i18n/routing";
+import {
+  buildTranslationsRecord,
+  translationEntries,
+} from "@/lib/i18n/translation-utils";
 import type { PortfolioEditTranslations } from "@/lib/queries/portfolio";
 import {
   type PortfolioFormData,
@@ -94,10 +97,10 @@ export function PortfolioForm({
       status: initialData?.status ?? "draft",
       startDate: initialData?.startDate ?? null,
       endDate: initialData?.endDate ?? null,
-      translations: {
-        en: initialData?.translations.en ?? emptyTranslation,
-        fr: initialData?.translations.fr ?? emptyTranslation,
-      },
+      translations: buildTranslationsRecord(
+        initialData?.translations,
+        emptyTranslation,
+      ),
     },
   });
 
@@ -106,7 +109,7 @@ export function PortfolioForm({
   const thumbnailUrl = watch("thumbnailUrl");
 
   function onTitleBlur(locale: Locale, e: React.FocusEvent<HTMLInputElement>) {
-    if (locale !== "en") return;
+    if (locale !== routing.defaultLocale) return;
     const currentSlug = watch("slug");
     if (!currentSlug || !isEditing) {
       setValue("slug", slugify(e.target.value));
@@ -114,14 +117,13 @@ export function PortfolioForm({
   }
 
   function onSubmit(data: PortfolioFormInput) {
+    const translationsPayload = Object.fromEntries(
+      translationEntries(data.translations),
+    ) as PortfolioFormData["translations"];
+
     const payload: PortfolioFormData = {
       ...data,
-      translations: {
-        en: data.translations.en,
-        ...(isTranslationEmpty(data.translations.fr)
-          ? {}
-          : { fr: data.translations.fr }),
-      },
+      translations: translationsPayload,
     };
 
     startTransition(async () => {

@@ -5,6 +5,8 @@
  * no Node-only APIs) so that client components can use it safely.
  */
 
+import { type Locale, routing } from "@/i18n/routing";
+
 function isTiptapDocEmpty(doc: unknown): boolean {
   if (!doc || typeof doc !== "object") return true;
   const d = doc as { type?: string; content?: unknown[] };
@@ -52,4 +54,18 @@ export function translationEntries<T extends Record<string, unknown>>(
   return Object.entries(translations).filter(
     (entry): entry is [string, T] => entry[1] !== undefined,
   );
+}
+
+/**
+ * Build a record keyed by every supported locale.
+ * Uses `existing` if present, otherwise falls back to `emptyValue`.
+ * Lets forms initialize `defaultValues.translations` without hardcoding locales.
+ */
+export function buildTranslationsRecord<T>(
+  existing: Partial<Record<Locale, T | undefined>> | undefined,
+  emptyValue: T,
+): Record<Locale, T> {
+  return Object.fromEntries(
+    routing.locales.map((locale) => [locale, existing?.[locale] ?? emptyValue]),
+  ) as Record<Locale, T>;
 }

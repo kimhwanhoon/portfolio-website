@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { TiptapJSON } from "@/lib/db/schema";
+import { translationsObject } from "@/lib/i18n/zod-helpers";
 
 const tiptapDocSchema = z
   .object({
@@ -51,6 +52,12 @@ const postTranslationSchema = postTranslationFieldsSchema.extend({
   contentHtml: z.string().min(1, "Post content is required"),
 });
 
+/** Looser fields-only schema for non-default locales in the client form. */
+const postTranslationFormFieldsSchema = z.object({
+  title: z.string().max(255),
+  excerpt: z.string().max(500),
+});
+
 const postBaseSchema = z.object({
   slug: z.string().max(255, "Slug must be less than 255 characters").optional(),
   coverImageUrl: z.string().url().optional().or(z.literal("")),
@@ -63,32 +70,17 @@ const postBaseSchema = z.object({
     .default([]),
 });
 
-const postTranslationsSchema = z.object({
-  en: postTranslationSchema,
-  fr: postTranslationSchema.optional(),
+/** Server schema: validated server-side; Tiptap content required. */
+export const postSchema = postBaseSchema.extend({
+  translations: translationsObject(postTranslationSchema),
 });
 
-const postTranslationFormFieldsSchema = z.object({
-  title: z.string().max(255),
-  excerpt: z.string().max(500),
-});
-
-const postTranslationsFormSchema = z.object({
-  en: postTranslationFieldsSchema,
-  fr: postTranslationFormFieldsSchema.optional(),
-});
-
-/** Client form resolver — Tiptap content is merged at submit time. */
+/** Client form schema: looser, Tiptap content merged at submit time. */
 export const postFormSchema = postBaseSchema.extend({
-  translations: postTranslationsFormSchema,
+  translations: translationsObject(postTranslationFormFieldsSchema),
 });
 
 export type PostFormInput = z.infer<typeof postFormSchema>;
-
-export const postSchema = postBaseSchema.extend({
-  translations: postTranslationsSchema,
-});
-
 export type PostTranslationData = z.infer<typeof postTranslationSchema>;
 export type PostTranslationFields = z.infer<typeof postTranslationFieldsSchema>;
 export type PostFormData = z.infer<typeof postSchema>;

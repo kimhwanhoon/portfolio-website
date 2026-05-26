@@ -9,10 +9,9 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { Badge } from "@/components/ui/badge";
 import type { Locale } from "@/i18n/routing";
+import { buildAlternates } from "@/lib/i18n/metadata";
 import { getAllPublishedPostSlugs, getPostBySlug } from "@/lib/queries/post";
-
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://kimhwanhoon.com";
-const AUTHOR_NAME = "Kim Hwanhoon";
+import { SITE_AUTHOR, SITE_URL } from "@/lib/site-config";
 
 function toIsoDate(date: Date | null, fallback: Date) {
   return (date ?? fallback).toISOString();
@@ -27,14 +26,15 @@ export async function generateMetadata({
   const post = await getPostBySlug(slug, locale as Locale);
   if (!post) return {};
 
-  const canonical = `${BASE_URL}/${locale}/blog/${slug}`;
+  const alternates = buildAlternates(locale as Locale, `/blog/${slug}`);
+  const canonical = alternates.canonical as string;
   const publishedTime = toIsoDate(post.publishedAt, post.createdAt);
   const modifiedTime = toIsoDate(post.updatedAt, post.createdAt);
 
   return {
     title: post.title,
     description: post.excerpt,
-    alternates: { canonical },
+    alternates,
     openGraph: {
       type: "article",
       title: post.title,
@@ -43,7 +43,7 @@ export async function generateMetadata({
       locale: "en_US",
       publishedTime,
       modifiedTime,
-      authors: [AUTHOR_NAME],
+      authors: [SITE_AUTHOR],
     },
     twitter: {
       card: "summary_large_image",
@@ -71,7 +71,7 @@ export default async function BlogPostPage({
 
   const publishedDate = post.publishedAt ?? post.createdAt;
   const modifiedDate = post.updatedAt;
-  const articleUrl = `${BASE_URL}/${locale}/blog/${slug}`;
+  const articleUrl = `${SITE_URL}/${locale}/blog/${slug}`;
 
   const articleJsonLd = {
     "@context": "https://schema.org",
@@ -82,7 +82,7 @@ export default async function BlogPostPage({
     dateModified: modifiedDate.toISOString(),
     author: {
       "@type": "Person",
-      name: AUTHOR_NAME,
+      name: SITE_AUTHOR,
     },
     url: articleUrl,
     ...(post.coverImageUrl ? { image: [post.coverImageUrl] } : {}),

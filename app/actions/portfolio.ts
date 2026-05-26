@@ -35,11 +35,12 @@ function revalidateAll() {
 
 function normalizePortfolioPayload(data: unknown) {
   const validated = portfolioSchema.parse(data);
-  const { fr, ...rest } = validated.translations;
-  const translations = {
-    en: validated.translations.en,
-    ...(isTranslationEmpty(fr) ? {} : { fr }),
-  };
+  const translations = Object.fromEntries(
+    Object.entries(validated.translations).filter(
+      ([locale, values]) =>
+        locale === routing.defaultLocale || !isTranslationEmpty(values),
+    ),
+  ) as typeof validated.translations;
   return { ...validated, translations };
 }
 

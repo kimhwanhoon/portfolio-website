@@ -7,6 +7,7 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { PortfolioDetail } from "@/components/portfolio/portfolio-detail";
 import type { Locale } from "@/i18n/routing";
+import { buildAlternates } from "@/lib/i18n/metadata";
 import {
   getAllPublishedSlugs,
   getPortfolioBySlug,
@@ -24,6 +25,7 @@ export async function generateMetadata({
   return {
     title: item.title,
     description: item.shortDescription,
+    alternates: buildAlternates(locale as Locale, `/portfolio/${slug}`),
     openGraph: {
       title: item.title,
       description: item.shortDescription,

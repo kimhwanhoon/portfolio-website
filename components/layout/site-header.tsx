@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
+import { LocaleSwitcher } from "@/components/layout/locale-switcher";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { cn } from "@/lib/utils";
 
@@ -54,10 +55,12 @@ export function SiteHeader() {
               </Link>
             )}
           </nav>
+          <LocaleSwitcher />
           <ThemeToggle />
         </div>
 
         <div className="flex items-center gap-1 sm:hidden">
+          <LocaleSwitcher />
           <ThemeToggle />
           <button
             type="button"

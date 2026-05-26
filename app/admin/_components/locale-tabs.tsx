@@ -2,15 +2,8 @@
 
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { type Locale, routing } from "@/i18n/routing";
+import { type Locale, localeNames, routing } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
-
-const CONTENT_LOCALES = routing.locales;
-
-const LOCALE_LABELS: Record<Locale, string> = {
-  en: "English",
-  fr: "Français",
-};
 
 type LocaleTabsProps = {
   defaultLocale?: Locale;
@@ -18,7 +11,7 @@ type LocaleTabsProps = {
 };
 
 export function LocaleTabs({
-  defaultLocale = "en",
+  defaultLocale = routing.defaultLocale,
   children,
 }: LocaleTabsProps) {
   const [active, setActive] = useState<Locale>(defaultLocale);
@@ -30,7 +23,7 @@ export function LocaleTabs({
         role="tablist"
         aria-label="Content language"
       >
-        {CONTENT_LOCALES.map((locale) => (
+        {routing.locales.map((locale) => (
           <button
             key={locale}
             type="button"
@@ -44,8 +37,8 @@ export function LocaleTabs({
                 : "border-transparent text-muted-foreground hover:text-foreground",
             )}
           >
-            {LOCALE_LABELS[locale]}
-            {locale !== "en" && (
+            {localeNames[locale]}
+            {locale !== routing.defaultLocale && (
               <Badge variant="secondary" className="text-xs font-normal">
                 Optional
               </Badge>
@@ -53,7 +46,7 @@ export function LocaleTabs({
           </button>
         ))}
       </div>
-      {CONTENT_LOCALES.map((locale) => (
+      {routing.locales.map((locale) => (
         <div
           key={locale}
           role="tabpanel"

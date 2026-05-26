@@ -8,13 +8,13 @@ import { TagFilter } from "@/components/blog/tag-filter";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import type { Locale } from "@/i18n/routing";
+import { buildAlternates } from "@/lib/i18n/metadata";
 import {
   getAllTagsWithCounts,
   getFeaturedPost,
   getPublishedPostsPaginated,
 } from "@/lib/queries/post";
-
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://kimhwanhoon.com";
+import { SITE_URL } from "@/lib/site-config";
 
 export async function generateMetadata({
   params,
@@ -23,12 +23,13 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "blog" });
-  const canonical = `${BASE_URL}/${locale}/blog`;
+  const alternates = buildAlternates(locale as Locale, "/blog");
+  const canonical = alternates.canonical as string;
 
   return {
     title: t("heading"),
     description: t("subtitle"),
-    alternates: { canonical },
+    alternates,
     openGraph: {
       title: t("heading"),
       description: t("subtitle"),
@@ -74,7 +75,7 @@ export default async function BlogPage({
     "@context": "https://schema.org",
     "@type": "Blog",
     name: t("heading"),
-    url: `${BASE_URL}/${locale}/blog`,
+    url: `${SITE_URL}/${locale}/blog`,
   };
 
   return (

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { Locale } from "@/i18n/routing";
 
 const AUTOSAVE_VERSION = 2;
 const DEFAULT_INTERVAL_MS = 10_000;
@@ -14,10 +15,7 @@ export type PostTranslationAutosave = {
 export type PostAutosaveSnapshot = {
   slug: string;
   coverImageUrl: string;
-  translations: {
-    en: PostTranslationAutosave;
-    fr?: PostTranslationAutosave;
-  };
+  translations: Partial<Record<Locale, PostTranslationAutosave>>;
   tagSlugs: string[];
   status: "draft" | "published";
   featured: boolean;

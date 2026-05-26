@@ -10,6 +10,7 @@ import {
   portfolioTranslations,
 } from "@/lib/db/schema";
 import { coalesceTranslation, DEFAULT_LOCALE } from "@/lib/db/translations";
+import type { TranslationsFor } from "@/lib/i18n/zod-helpers";
 import type { PortfolioTranslationData } from "@/lib/validators/portfolio";
 
 const portfolioT = portfolioTranslations;
@@ -203,10 +204,8 @@ export async function getAllImagesForAdmin() {
     .orderBy(desc(images.createdAt));
 }
 
-export type PortfolioEditTranslations = {
-  en: PortfolioTranslationData;
-  fr?: PortfolioTranslationData;
-};
+export type PortfolioEditTranslations =
+  TranslationsFor<PortfolioTranslationData>;
 
 export async function getPortfolioItemForEdit(id: string) {
   const item = await db.query.portfolioItems.findFirst({
@@ -225,15 +224,15 @@ export async function getPortfolioItemForEdit(id: string) {
         fullDescription: t.fullDescription,
       },
     ]),
-  ) as Record<string, PortfolioTranslationData>;
+  ) as Partial<Record<Locale, PortfolioTranslationData>>;
 
-  const en = byLocale.en;
-  if (!en) return null;
+  const defaultTranslation = byLocale[routing.defaultLocale];
+  if (!defaultTranslation) return null;
 
-  const translations: PortfolioEditTranslations = {
-    en,
-    ...(byLocale.fr ? { fr: byLocale.fr } : {}),
-  };
+  const translations = {
+    ...byLocale,
+    [routing.defaultLocale]: defaultTranslation,
+  } as PortfolioEditTranslations;
 
   return {
     id: item.id,

@@ -1,9 +1,17 @@
 import { z } from "zod";
+import { translationsObject } from "@/lib/i18n/zod-helpers";
 
 const portfolioTranslationSchema = z.object({
   title: z.string().min(1, "Title is required").max(255),
   shortDescription: z.string().min(1, "Short description is required").max(300),
   fullDescription: z.string().min(1, "Full description is required"),
+});
+
+/** Looser fields-only schema for non-default locales in the client form. */
+const portfolioTranslationFormFieldsSchema = z.object({
+  title: z.string().max(255),
+  shortDescription: z.string().max(300),
+  fullDescription: z.string(),
 });
 
 const portfolioBaseSchema = z.object({
@@ -19,28 +27,14 @@ const portfolioBaseSchema = z.object({
   endDate: z.coerce.date().optional().nullable(),
 });
 
-const portfolioTranslationFormFieldsSchema = z.object({
-  title: z.string().max(255),
-  shortDescription: z.string().max(300),
-  fullDescription: z.string(),
-});
-
-const portfolioTranslationsSchema = z.object({
-  en: portfolioTranslationSchema,
-  fr: portfolioTranslationSchema.optional(),
-});
-
-const portfolioTranslationsFormSchema = z.object({
-  en: portfolioTranslationSchema,
-  fr: portfolioTranslationFormFieldsSchema.optional(),
-});
-
+/** Server schema: validates the payload sent to server actions. */
 export const portfolioSchema = portfolioBaseSchema.extend({
-  translations: portfolioTranslationsSchema,
+  translations: translationsObject(portfolioTranslationSchema),
 });
 
+/** Client form schema: same shape but with looser non-default locale fields. */
 export const portfolioFormSchema = portfolioBaseSchema.extend({
-  translations: portfolioTranslationsFormSchema,
+  translations: translationsObject(portfolioTranslationFormFieldsSchema),
 });
 
 export type PortfolioTranslationData = z.infer<

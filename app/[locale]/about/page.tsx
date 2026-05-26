@@ -9,8 +9,9 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SectionWrapper } from "@/components/sections/section-wrapper";
 import { Badge } from "@/components/ui/badge";
-import { routing } from "@/i18n/routing";
+import { type Locale, routing } from "@/i18n/routing";
 import { skills } from "@/lib/config/skills";
+import { buildAlternates } from "@/lib/i18n/metadata";
 
 export async function generateMetadata({
   params,
@@ -21,6 +22,7 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "aboutPage" });
   return {
     title: t("title"),
+    alternates: buildAlternates(locale as Locale, "/about"),
   };
 }
 

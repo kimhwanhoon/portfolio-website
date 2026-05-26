@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
@@ -6,7 +7,20 @@ import { ContactCTA } from "@/components/sections/contact-cta";
 import { HeroSection } from "@/components/sections/hero";
 import { PortfolioSection } from "@/components/sections/portfolio-section";
 import type { Locale } from "@/i18n/routing";
+import { buildAlternates } from "@/lib/i18n/metadata";
 import { getPublishedPortfolioItems } from "@/lib/queries/portfolio";
+import { SITE_URL } from "@/lib/site-config";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    alternates: buildAlternates(locale as Locale, ""),
+  };
+}
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -14,7 +28,7 @@ const jsonLd = {
   name: "Kim Hwanhoon",
   jobTitle: "Frontend Developer",
   description: "I craft web experiences that just work.",
-  url: process.env.NEXT_PUBLIC_SITE_URL || "https://kimhwanhoon.com",
+  url: SITE_URL,
 };
 
 export default async function HomePage({

@@ -4,6 +4,7 @@ import { Geist, Geist_Mono, Inter, Montserrat } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { SITE_URL } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
 
 const montserratHeading = Montserrat({
@@ -18,8 +19,6 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://kimhwanhoon.com";
-
 export const metadata: Metadata = {
   title: {
     default: "Kim Hwanhoon | Frontend Developer",
@@ -29,7 +28,7 @@ export const metadata: Metadata = {
     "Frontend developer portfolio — I craft web experiences that just work.",
   authors: [{ name: "Kim Hwanhoon" }],
   creator: "Kim Hwanhoon",
-  metadataBase: new URL(BASE_URL),
+  metadataBase: new URL(SITE_URL),
   openGraph: {
     type: "website",
     locale: "en_US",

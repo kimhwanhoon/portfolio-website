@@ -123,11 +123,12 @@ async function syncPostTags(postId: string, tagSlugs: string[]) {
 
 function normalizePostPayload(data: unknown) {
   const validated = postSchema.parse(data);
-  const { fr, ...rest } = validated.translations;
-  const translations = {
-    en: validated.translations.en,
-    ...(isTranslationEmpty(fr) ? {} : { fr }),
-  };
+  const translations = Object.fromEntries(
+    Object.entries(validated.translations).filter(
+      ([locale, values]) =>
+        locale === routing.defaultLocale || !isTranslationEmpty(values),
+    ),
+  ) as typeof validated.translations;
   return { ...validated, translations };
 }
 
@@ -148,27 +149,43 @@ async function processTranslation(translation: PostTranslationData) {
   return { ...translation, contentHtml };
 }
 
+async function processTranslationsRecord(
+  translations: ReturnType<typeof normalizePostPayload>["translations"],
+): Promise<ReturnType<typeof normalizePostPayload>["translations"]> {
+  const entries = await Promise.all(
+    translationEntries(translations).map(
+      async ([locale, values]) =>
+        [locale, await processTranslation(values)] as const,
+    ),
+  );
+  return Object.fromEntries(entries) as ReturnType<
+    typeof normalizePostPayload
+  >["translations"];
+}
+
 export async function createPost(data: unknown) {
   await requireAdmin();
   const validated = normalizePostPayload(data);
+  const defaultTranslation = validated.translations[routing.defaultLocale];
+  if (!defaultTranslation) {
+    throw new Error(`Translation for default locale is required.`);
+  }
   const slug = resolveSlug({
     slug: validated.slug,
-    title: validated.translations.en.title,
+    title: defaultTranslation.title,
   });
 
-  const enTranslation = await processTranslation(validated.translations.en);
-  const { readingMinutes } = await processPostContent(
-    enTranslation.contentJson as TiptapJSON,
-    enTranslation.contentHtml,
+  const translationsToSync = await processTranslationsRecord(
+    validated.translations,
   );
-
-  const translationsToSync: ReturnType<
-    typeof normalizePostPayload
-  >["translations"] = { en: enTranslation };
-
-  if (validated.translations.fr) {
-    translationsToSync.fr = await processTranslation(validated.translations.fr);
+  const defaultProcessed = translationsToSync[routing.defaultLocale];
+  if (!defaultProcessed) {
+    throw new Error(`Processed translation for default locale is missing.`);
   }
+  const { readingMinutes } = await processPostContent(
+    defaultProcessed.contentJson as TiptapJSON,
+    defaultProcessed.contentHtml,
+  );
 
   const publishedAt =
     validated.status === "published"
@@ -212,9 +229,13 @@ export async function createPost(data: unknown) {
 export async function updatePost(id: string, data: unknown) {
   await requireAdmin();
   const validated = normalizePostPayload(data);
+  const defaultTranslation = validated.translations[routing.defaultLocale];
+  if (!defaultTranslation) {
+    throw new Error(`Translation for default locale is required.`);
+  }
   const slug = resolveSlug({
     slug: validated.slug,
-    title: validated.translations.en.title,
+    title: defaultTranslation.title,
   });
 
   const existingPost = await db.query.posts.findFirst({
@@ -227,19 +248,17 @@ export async function updatePost(id: string, data: unknown) {
 
   const oldSlug = existingPost.slug;
 
-  const enTranslation = await processTranslation(validated.translations.en);
-  const { readingMinutes } = await processPostContent(
-    enTranslation.contentJson as TiptapJSON,
-    enTranslation.contentHtml,
+  const translationsToSync = await processTranslationsRecord(
+    validated.translations,
   );
-
-  const translationsToSync: ReturnType<
-    typeof normalizePostPayload
-  >["translations"] = { en: enTranslation };
-
-  if (validated.translations.fr) {
-    translationsToSync.fr = await processTranslation(validated.translations.fr);
+  const defaultProcessed = translationsToSync[routing.defaultLocale];
+  if (!defaultProcessed) {
+    throw new Error(`Processed translation for default locale is missing.`);
   }
+  const { readingMinutes } = await processPostContent(
+    defaultProcessed.contentJson as TiptapJSON,
+    defaultProcessed.contentHtml,
+  );
 
   const publishedAt =
     validated.status === "published"

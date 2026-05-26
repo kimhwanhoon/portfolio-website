@@ -11,9 +11,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import type { Locale } from "@/i18n/routing";
+import { type Locale, routing } from "@/i18n/routing";
 import type { TiptapJSON } from "@/lib/db/schema";
-import { isTranslationEmpty } from "@/lib/i18n/translation-utils";
+import {
+  buildTranslationsRecord,
+  isTranslationEmpty,
+} from "@/lib/i18n/translation-utils";
 import type { PostEditTranslations } from "@/lib/queries/post";
 import {
   type PostFormData,
@@ -91,19 +94,26 @@ export function PostForm({ initialData, availableImages = [] }: PostFormProps) {
   const [pendingDraft, setPendingDraft] = useState<PostAutosaveSnapshot | null>(
     null,
   );
-  const [editorKeys, setEditorKeys] = useState<Partial<Record<Locale, number>>>(
-    { en: 0, fr: 0 },
+  const [editorKeys, setEditorKeys] = useState<Record<Locale, number>>(
+    () =>
+      Object.fromEntries(routing.locales.map((l) => [l, 0])) as Record<
+        Locale,
+        number
+      >,
   );
   const [editorContent, setEditorContent] = useState<
-    Partial<Record<Locale, TiptapJSON>>
-  >({
-    en:
-      (initialData?.translations.en.contentJson as TiptapJSON) ??
+    Record<Locale, TiptapJSON>
+  >(() =>
+    buildTranslationsRecord<TiptapJSON>(
+      Object.fromEntries(
+        routing.locales.map((l) => [
+          l,
+          initialData?.translations[l]?.contentJson as TiptapJSON | undefined,
+        ]),
+      ) as Partial<Record<Locale, TiptapJSON>>,
       EMPTY_TIPTAP_DOC,
-    fr:
-      (initialData?.translations.fr?.contentJson as TiptapJSON) ??
-      EMPTY_TIPTAP_DOC,
-  });
+    ),
+  );
   const [editorDirty, setEditorDirty] = useState(false);
 
   const storageKey = `post-draft:${initialData?.id ?? "new"}`;
@@ -125,16 +135,15 @@ export function PostForm({ initialData, availableImages = [] }: PostFormProps) {
       featured: initialData?.featured ?? false,
       publishedAt: initialData?.publishedAt ?? null,
       tagSlugs: initialData?.tags.map((t) => t.name) ?? [],
-      translations: {
-        en: {
-          title: initialData?.translations.en.title ?? "",
-          excerpt: initialData?.translations.en.excerpt ?? "",
-        },
-        fr: {
-          title: initialData?.translations.fr?.title ?? "",
-          excerpt: initialData?.translations.fr?.excerpt ?? "",
-        },
-      },
+      translations: buildTranslationsRecord(
+        Object.fromEntries(
+          routing.locales.map((l) => {
+            const t = initialData?.translations[l];
+            return [l, t ? { title: t.title, excerpt: t.excerpt } : undefined];
+          }),
+        ) as Partial<Record<Locale, { title: string; excerpt: string }>>,
+        { title: "", excerpt: "" },
+      ),
     },
   });
 
@@ -151,30 +160,20 @@ export function PostForm({ initialData, availableImages = [] }: PostFormProps) {
         document.getElementById("tagSlugs") as HTMLInputElement | null
       )?.value;
 
-      const snapshotTranslations: PostAutosaveSnapshot["translations"] = {
-        en: {
-          title: translations.en.title,
-          excerpt: translations.en.excerpt,
-          contentJson:
-            editorRefs.current.en?.getContent().json ?? EMPTY_TIPTAP_DOC,
-        },
-      };
-
-      const frFields = translations.fr;
-      const frContent = editorRefs.current.fr?.getContent().json;
-      if (
-        frFields &&
-        !isTranslationEmpty({
-          title: frFields.title,
-          excerpt: frFields.excerpt,
-          contentJson: frContent,
-        })
-      ) {
-        snapshotTranslations.fr = {
-          title: frFields.title,
-          excerpt: frFields.excerpt,
-          contentJson: frContent ?? EMPTY_TIPTAP_DOC,
+      const snapshotTranslations: PostAutosaveSnapshot["translations"] = {};
+      for (const locale of routing.locales) {
+        const fields = translations[locale];
+        const json =
+          editorRefs.current[locale]?.getContent().json ?? EMPTY_TIPTAP_DOC;
+        const isDefault = locale === routing.defaultLocale;
+        const candidate = {
+          title: fields?.title ?? "",
+          excerpt: fields?.excerpt ?? "",
+          contentJson: json,
         };
+        if (isDefault || !isTranslationEmpty(candidate)) {
+          snapshotTranslations[locale] = candidate;
+        }
       }
 
       return {
@@ -216,34 +215,38 @@ export function PostForm({ initialData, availableImages = [] }: PostFormProps) {
       featured: pendingDraft.featured,
       publishedAt: initialData?.publishedAt ?? null,
       tagSlugs: pendingDraft.tagSlugs,
-      translations: {
-        en: {
-          title: pendingDraft.translations.en.title,
-          excerpt: pendingDraft.translations.en.excerpt,
-        },
-        fr: pendingDraft.translations.fr
-          ? {
-              title: pendingDraft.translations.fr.title,
-              excerpt: pendingDraft.translations.fr.excerpt,
-            }
-          : { title: "", excerpt: "" },
-      },
+      translations: buildTranslationsRecord(
+        Object.fromEntries(
+          routing.locales.map((l) => {
+            const t = pendingDraft.translations[l];
+            return [l, t ? { title: t.title, excerpt: t.excerpt } : undefined];
+          }),
+        ) as Partial<Record<Locale, { title: string; excerpt: string }>>,
+        { title: "", excerpt: "" },
+      ),
     });
     const tagInput = document.getElementById("tagSlugs") as HTMLInputElement;
     if (tagInput) {
       tagInput.value = pendingDraft.tagSlugs.join(", ");
     }
-    setEditorContent({
-      en: pendingDraft.translations.en.contentJson as TiptapJSON,
-      fr:
-        (pendingDraft.translations.fr?.contentJson as TiptapJSON) ??
+    setEditorContent(
+      buildTranslationsRecord<TiptapJSON>(
+        Object.fromEntries(
+          routing.locales.map((l) => [
+            l,
+            pendingDraft.translations[l]?.contentJson as TiptapJSON | undefined,
+          ]),
+        ) as Partial<Record<Locale, TiptapJSON>>,
         EMPTY_TIPTAP_DOC,
-    });
+      ),
+    );
     setEditorDirty(true);
-    setEditorKeys((prev) => ({
-      en: (prev.en ?? 0) + 1,
-      fr: (prev.fr ?? 0) + 1,
-    }));
+    setEditorKeys(
+      (prev) =>
+        Object.fromEntries(
+          routing.locales.map((l) => [l, (prev[l] ?? 0) + 1]),
+        ) as Record<Locale, number>,
+    );
     setPendingDraft(null);
   }
 
@@ -253,7 +256,7 @@ export function PostForm({ initialData, availableImages = [] }: PostFormProps) {
   }
 
   function onTitleBlur(locale: Locale, e: React.FocusEvent<HTMLInputElement>) {
-    if (locale !== "en") return;
+    if (locale !== routing.defaultLocale) return;
     const currentSlug = watch("slug");
     if (!currentSlug?.trim()) {
       setValue("slug", slugify(e.target.value));
@@ -272,36 +275,26 @@ export function PostForm({ initialData, availableImages = [] }: PostFormProps) {
   function buildTranslationsPayload(
     data: PostFormInput,
   ): PostFormData["translations"] {
-    const enContent = getEditorContent("en");
-    const payload: PostFormData["translations"] = {
-      en: {
-        ...data.translations.en,
-        contentJson:
-          enContent.json as PostFormData["translations"]["en"]["contentJson"],
-        contentHtml: enContent.html,
-      },
-    };
+    const payload: Record<string, unknown> = {};
 
-    const frFields = data.translations.fr;
-    const frContent = getEditorContent("fr");
-    if (
-      frFields &&
-      !isTranslationEmpty({
-        title: frFields.title,
-        excerpt: frFields.excerpt,
-        contentJson: frContent.json,
-      })
-    ) {
-      payload.fr = {
-        ...frFields,
-        contentJson: frContent.json as NonNullable<
-          PostFormData["translations"]["fr"]
-        >["contentJson"],
-        contentHtml: frContent.html,
+    for (const locale of routing.locales) {
+      const fields = data.translations[locale];
+      const editor = getEditorContent(locale);
+      const isDefault = locale === routing.defaultLocale;
+
+      const candidate = {
+        title: fields?.title ?? "",
+        excerpt: fields?.excerpt ?? "",
+        contentJson: editor.json,
+        contentHtml: editor.html,
       };
+
+      if (isDefault || !isTranslationEmpty(candidate)) {
+        payload[locale] = candidate;
+      }
     }
 
-    return payload;
+    return payload as PostFormData["translations"];
   }
 
   function onSubmit(data: PostFormInput) {
