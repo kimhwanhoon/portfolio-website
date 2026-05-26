@@ -24,4 +24,12 @@ export const skills = [
   "shadcn/ui",
   "AG Grid",
   "Git",
+  "Claude",
+  "Cloudflare",
+  "neon",
+  "drizzle",
+  "R2",
+  "Clerk",
+  "i18n",
+  "SEO",
 ] as const;

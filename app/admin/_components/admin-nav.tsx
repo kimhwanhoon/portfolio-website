@@ -1,7 +1,12 @@
 "use client";
 
 import { UserButton } from "@clerk/nextjs";
-import { IconLayoutDashboard, IconPhoto, IconPlus } from "@tabler/icons-react";
+import {
+  IconArticle,
+  IconLayoutDashboard,
+  IconPhoto,
+  IconPlus,
+} from "@tabler/icons-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
@@ -12,16 +17,25 @@ const navItems = [
     label: "Portfolio",
     href: "/admin",
     icon: IconLayoutDashboard,
+    exact: true,
   },
   {
     label: "New Item",
     href: "/admin/new",
     icon: IconPlus,
+    exact: false,
+  },
+  {
+    label: "Posts",
+    href: "/admin/posts",
+    icon: IconArticle,
+    exact: false,
   },
   {
     label: "Images",
     href: "/admin/images",
     icon: IconPhoto,
+    exact: false,
   },
 ];
 
@@ -38,10 +52,9 @@ export function AdminNav() {
       </div>
       <nav className="flex flex-1 flex-col gap-1 p-3">
         {navItems.map((item) => {
-          const isActive =
-            item.href === "/admin"
-              ? pathname === "/admin"
-              : pathname.startsWith(item.href);
+          const isActive = item.exact
+            ? pathname === item.href
+            : pathname.startsWith(item.href);
           return (
             <Link
               key={item.href}
