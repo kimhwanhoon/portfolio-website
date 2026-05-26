@@ -30,9 +30,9 @@ export async function PortfolioCard({
     <ScaleOnHover>
       <Link
         href={`/${locale}/portfolio/${slug}`}
-        className="group block overflow-hidden rounded-xl border bg-white transition-shadow hover:shadow-lg"
+        className="group block overflow-hidden rounded-xl border bg-card transition-shadow hover:shadow-lg"
       >
-        <div className="relative aspect-video overflow-hidden bg-zinc-100">
+        <div className="relative aspect-video overflow-hidden bg-muted">
           {thumbnailUrl ? (
             <Image
               src={thumbnailUrl}

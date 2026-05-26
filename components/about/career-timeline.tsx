@@ -11,10 +11,10 @@ interface CareerTimelineProps {
 
 export function CareerTimeline({ entries }: CareerTimelineProps) {
   return (
-    <div className="relative space-y-8 pl-8 before:absolute before:left-[7px] before:top-2 before:bottom-2 before:w-px before:bg-zinc-200">
+    <div className="relative space-y-8 pl-8 before:absolute before:left-[7px] before:top-2 before:bottom-2 before:w-px before:bg-border">
       {entries.map((entry) => (
         <div key={`${entry.company}-${entry.date}`} className="relative">
-          <div className="absolute -left-8 top-1.5 size-[15px] rounded-full border-2 border-zinc-300 bg-white" />
+          <div className="absolute -left-8 top-1.5 size-[15px] rounded-full border-2 border-border bg-background" />
           <p className="text-sm text-muted-foreground">{entry.date}</p>
           <h3 className="font-heading text-base font-semibold mt-1">
             {entry.title}
