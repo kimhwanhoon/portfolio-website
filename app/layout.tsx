@@ -1,10 +1,11 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter, Montserrat } from "next/font/google";
+import { Inter, Montserrat } from "next/font/google";
+import { getLocale } from "next-intl/server";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { ThemeProvider } from "@/components/providers/theme-provider";
-import { SITE_URL } from "@/lib/site-config";
+import { SITE_AUTHOR, SITE_URL, SITE_VERIFICATION } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
 
 const montserratHeading = Montserrat({
@@ -13,57 +14,48 @@ const montserratHeading = Montserrat({
 });
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "Kim Hwanhoon | Frontend Developer",
-    template: "%s | Kim Hwanhoon",
+    default: `${SITE_AUTHOR} | Frontend Developer`,
+    template: `%s | ${SITE_AUTHOR}`,
   },
   description:
     "Frontend developer portfolio — I craft web experiences that just work.",
-  authors: [{ name: "Kim Hwanhoon" }],
-  creator: "Kim Hwanhoon",
-  metadataBase: new URL(SITE_URL),
+  authors: [{ name: SITE_AUTHOR }],
+  creator: SITE_AUTHOR,
   openGraph: {
     type: "website",
-    locale: "en_US",
-    siteName: "Kim Hwanhoon",
-    title: "Kim Hwanhoon | Frontend Developer",
-    description:
-      "Frontend developer portfolio — I craft web experiences that just work.",
+    siteName: SITE_AUTHOR,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Kim Hwanhoon | Frontend Developer",
-    description:
-      "Frontend developer portfolio — I craft web experiences that just work.",
   },
   robots: {
     index: true,
     follow: true,
   },
+  ...(Object.keys(SITE_VERIFICATION).length > 0
+    ? { verification: SITE_VERIFICATION }
+    : {}),
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+
   return (
     <ClerkProvider>
       <html
-        lang="en"
+        lang={locale}
         suppressHydrationWarning
         className={cn(
           "h-full",
           "antialiased",
-          geistSans.variable,
-          geistMono.variable,
           "font-sans",
           inter.variable,
           montserratHeading.variable,

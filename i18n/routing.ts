@@ -24,3 +24,16 @@ export const localeNames: Record<Locale, string> = {
   fr: "Français",
   ko: "한국어",
 };
+
+/** BCP-47 tags for Open Graph `og:locale` / `og:locale:alternate`. */
+export const localeOgTags: Record<Locale, string> = {
+  en: "en_US",
+  fr: "fr_FR",
+  ko: "ko_KR",
+};
+
+export function getAlternateOgLocales(locale: Locale): string[] {
+  return routing.locales
+    .filter((l) => l !== locale)
+    .map((l) => localeOgTags[l]);
+}

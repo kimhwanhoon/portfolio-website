@@ -80,7 +80,8 @@
     "sourceCode": "소스 코드"
   },
   "common": {
-    "skipToContent": "본문으로 건너뛰기"
+    "skipToContent": "본문으로 건너뛰기",
+    "home": "홈"
   },
   "blog": {
     "heading": "블로그",

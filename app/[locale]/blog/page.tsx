@@ -14,27 +14,61 @@ import {
   getFeaturedPost,
   getPublishedPostsPaginated,
 } from "@/lib/queries/post";
+import { blogJsonLd, jsonLdScript } from "@/lib/seo/json-ld";
+import { buildOpenGraphLocaleFields, ogImageFields } from "@/lib/seo/og";
 import { SITE_URL } from "@/lib/site-config";
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ tag?: string; page?: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  const { tag, page: pageParam } = await searchParams;
   const t = await getTranslations({ locale, namespace: "blog" });
-  const alternates = buildAlternates(locale as Locale, "/blog");
-  const canonical = alternates.canonical as string;
+
+  const requestedPage = Number.parseInt(pageParam ?? "1", 10);
+  const page =
+    Number.isFinite(requestedPage) && requestedPage > 1 ? requestedPage : 1;
+
+  let alternates = buildAlternates(locale as Locale, "/blog");
+  let canonical = alternates.canonical as string;
+  let robots: Metadata["robots"];
+
+  if (tag) {
+    canonical = `${SITE_URL}/${locale}/blog`;
+    alternates = { ...alternates, canonical };
+    robots = { index: false, follow: true };
+  } else if (page > 1) {
+    canonical = `${SITE_URL}/${locale}/blog?page=${page}`;
+    alternates = { ...alternates, canonical };
+  }
+
+  const { openGraphImages, twitterImage } = ogImageFields(
+    locale as Locale,
+    "/blog",
+    t("heading"),
+  );
 
   return {
     title: t("heading"),
     description: t("subtitle"),
     alternates,
+    ...(robots ? { robots } : {}),
     openGraph: {
       title: t("heading"),
       description: t("subtitle"),
       url: canonical,
       type: "website",
+      ...buildOpenGraphLocaleFields(locale as Locale),
+      images: [...openGraphImages],
+    },
+    twitter: {
+      title: t("heading"),
+      description: t("subtitle"),
+      images: [twitterImage],
     },
   };
 }
@@ -71,18 +105,13 @@ export default async function BlogPage({
   const hideEmptyState = showHero && paginated.items.length === 0;
   const emptyMessage = tagSlug ? t("emptyForTag") : t("emptyState");
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Blog",
-    name: t("heading"),
-    url: `${SITE_URL}/${locale}/blog`,
-  };
+  const blogSchema = await blogJsonLd(locale as Locale);
 
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={jsonLdScript(blogSchema)}
       />
       <SiteHeader />
       <main id="main" className="mx-auto max-w-5xl px-6 py-12">

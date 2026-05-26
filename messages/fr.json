@@ -80,7 +80,8 @@
     "sourceCode": "Code source"
   },
   "common": {
-    "skipToContent": "Aller au contenu"
+    "skipToContent": "Aller au contenu",
+    "home": "Accueil"
   },
   "blog": {
     "heading": "Blog",

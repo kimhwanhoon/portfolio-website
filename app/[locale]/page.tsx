@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { AboutSection } from "@/components/sections/about-section";
@@ -9,7 +9,8 @@ import { PortfolioSection } from "@/components/sections/portfolio-section";
 import type { Locale } from "@/i18n/routing";
 import { buildAlternates } from "@/lib/i18n/metadata";
 import { getPublishedPortfolioItems } from "@/lib/queries/portfolio";
-import { SITE_URL } from "@/lib/site-config";
+import { jsonLdScript, personJsonLd, websiteJsonLd } from "@/lib/seo/json-ld";
+import { buildOpenGraphLocaleFields, ogImageFields } from "@/lib/seo/og";
 
 export async function generateMetadata({
   params,
@@ -17,19 +18,34 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "meta" });
+  const alternates = buildAlternates(locale as Locale, "");
+  const canonical = alternates.canonical as string;
+  const { openGraphImages, twitterImage } = ogImageFields(
+    locale as Locale,
+    "",
+    t("title"),
+  );
+
   return {
-    alternates: buildAlternates(locale as Locale, ""),
+    title: t("title"),
+    description: t("description"),
+    alternates,
+    openGraph: {
+      title: t("title"),
+      description: t("description"),
+      url: canonical,
+      type: "website",
+      ...buildOpenGraphLocaleFields(locale as Locale),
+      images: [...openGraphImages],
+    },
+    twitter: {
+      title: t("title"),
+      description: t("description"),
+      images: [twitterImage],
+    },
   };
 }
-
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Person",
-  name: "Kim Hwanhoon",
-  jobTitle: "Frontend Developer",
-  description: "I craft web experiences that just work.",
-  url: SITE_URL,
-};
 
 export default async function HomePage({
   params,
@@ -40,12 +56,16 @@ export default async function HomePage({
   setRequestLocale(locale);
 
   const items = await getPublishedPortfolioItems(locale as Locale);
+  const [person, website] = await Promise.all([
+    personJsonLd(locale as Locale),
+    Promise.resolve(websiteJsonLd()),
+  ]);
 
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={jsonLdScript([person, website])}
       />
       <SiteHeader />
       <main id="main">

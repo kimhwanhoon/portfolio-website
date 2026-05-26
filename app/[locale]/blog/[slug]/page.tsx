@@ -11,7 +11,13 @@ import { Badge } from "@/components/ui/badge";
 import type { Locale } from "@/i18n/routing";
 import { buildAlternates } from "@/lib/i18n/metadata";
 import { getAllPublishedPostSlugs, getPostBySlug } from "@/lib/queries/post";
-import { SITE_AUTHOR, SITE_URL } from "@/lib/site-config";
+import {
+  articleJsonLd,
+  breadcrumbJsonLd,
+  jsonLdScript,
+} from "@/lib/seo/json-ld";
+import { buildOpenGraphLocaleFields, ogImageFields } from "@/lib/seo/og";
+import { SITE_AUTHOR } from "@/lib/site-config";
 
 function toIsoDate(date: Date | null, fallback: Date) {
   return (date ?? fallback).toISOString();
@@ -30,6 +36,11 @@ export async function generateMetadata({
   const canonical = alternates.canonical as string;
   const publishedTime = toIsoDate(post.publishedAt, post.createdAt);
   const modifiedTime = toIsoDate(post.updatedAt, post.createdAt);
+  const { openGraphImages, twitterImage } = ogImageFields(
+    locale as Locale,
+    `/blog/${slug}`,
+    post.title,
+  );
 
   return {
     title: post.title,
@@ -40,15 +51,17 @@ export async function generateMetadata({
       title: post.title,
       description: post.excerpt,
       url: canonical,
-      locale: "en_US",
       publishedTime,
       modifiedTime,
       authors: [SITE_AUTHOR],
+      ...buildOpenGraphLocaleFields(locale as Locale),
+      images: [...openGraphImages],
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: post.excerpt,
+      images: [twitterImage],
     },
   };
 }
@@ -66,33 +79,37 @@ export default async function BlogPostPage({
   setRequestLocale(locale);
 
   const t = await getTranslations("blog");
+  const tCommon = await getTranslations("common");
   const post = await getPostBySlug(slug, locale as Locale);
   if (!post) notFound();
 
   const publishedDate = post.publishedAt ?? post.createdAt;
-  const modifiedDate = post.updatedAt;
-  const articleUrl = `${SITE_URL}/${locale}/blog/${slug}`;
 
-  const articleJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: post.title,
-    description: post.excerpt,
-    datePublished: publishedDate.toISOString(),
-    dateModified: modifiedDate.toISOString(),
-    author: {
-      "@type": "Person",
-      name: SITE_AUTHOR,
-    },
-    url: articleUrl,
-    ...(post.coverImageUrl ? { image: [post.coverImageUrl] } : {}),
-  };
+  const structuredData = [
+    articleJsonLd(locale as Locale, {
+      title: post.title,
+      excerpt: post.excerpt,
+      slug: post.slug,
+      coverImageUrl: post.coverImageUrl,
+      publishedAt: post.publishedAt,
+      createdAt: post.createdAt,
+      updatedAt: post.updatedAt,
+      readingMinutes: post.readingMinutes,
+      tags: post.tags,
+      contentHtml: post.contentHtml,
+    }),
+    breadcrumbJsonLd([
+      { name: tCommon("home"), href: `/${locale}` },
+      { name: t("heading"), href: `/${locale}/blog` },
+      { name: post.title, href: `/${locale}/blog/${slug}` },
+    ]),
+  ];
 
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+        dangerouslySetInnerHTML={jsonLdScript(structuredData)}
       />
       <SiteHeader />
       <main id="main">
@@ -127,7 +144,7 @@ export default async function BlogPostPage({
           <div className="mt-4 flex items-end justify-end gap-3 border-t border-border py-4 text-sm text-muted-foreground">
             <time dateTime={publishedDate.toISOString()}>
               {t("publishedOn", {
-                date: publishedDate.toLocaleDateString("en-US", {
+                date: publishedDate.toLocaleDateString(locale, {
                   year: "numeric",
                   month: "long",
                   day: "numeric",

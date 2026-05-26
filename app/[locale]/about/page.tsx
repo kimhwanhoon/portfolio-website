@@ -12,6 +12,18 @@ import { Badge } from "@/components/ui/badge";
 import { type Locale, routing } from "@/i18n/routing";
 import { skills } from "@/lib/config/skills";
 import { buildAlternates } from "@/lib/i18n/metadata";
+import {
+  breadcrumbJsonLd,
+  jsonLdScript,
+  personJsonLd,
+} from "@/lib/seo/json-ld";
+import { buildOpenGraphLocaleFields, ogImageFields } from "@/lib/seo/og";
+import { SITE_AUTHOR } from "@/lib/site-config";
+
+function truncateDescription(text: string, max = 160): string {
+  if (text.length <= max) return text;
+  return `${text.slice(0, max - 1).trimEnd()}…`;
+}
 
 export async function generateMetadata({
   params,
@@ -20,9 +32,36 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "aboutPage" });
+  const tMeta = await getTranslations({ locale, namespace: "meta" });
+  const extendedBio = t.raw("extendedBio") as Record<string, string>;
+  const description = truncateDescription(
+    extendedBio["0"] ?? tMeta("description"),
+  );
+  const alternates = buildAlternates(locale as Locale, "/about");
+  const canonical = alternates.canonical as string;
+  const { openGraphImages, twitterImage } = ogImageFields(
+    locale as Locale,
+    "/about",
+    `${t("title")} | ${SITE_AUTHOR}`,
+  );
+
   return {
     title: t("title"),
-    alternates: buildAlternates(locale as Locale, "/about"),
+    description,
+    alternates,
+    openGraph: {
+      title: t("title"),
+      description,
+      url: canonical,
+      type: "profile",
+      ...buildOpenGraphLocaleFields(locale as Locale),
+      images: [...openGraphImages],
+    },
+    twitter: {
+      title: t("title"),
+      description,
+      images: [twitterImage],
+    },
   };
 }
 
@@ -37,6 +76,7 @@ export default async function AboutPage({
 
   const t = await getTranslations("aboutPage");
   const tAbout = await getTranslations("about");
+  const tCommon = await getTranslations("common");
 
   const extendedBio = t.raw("extendedBio") as Record<string, string>;
   const timeline = t.raw("timeline") as Record<
@@ -44,8 +84,18 @@ export default async function AboutPage({
     { date: string; title: string; company: string; description: string }
   >;
 
+  const person = await personJsonLd(locale as Locale);
+  const breadcrumbs = breadcrumbJsonLd([
+    { name: tCommon("home"), href: `/${locale}` },
+    { name: t("title"), href: `/${locale}/about` },
+  ]);
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={jsonLdScript([person, breadcrumbs])}
+      />
       <SiteHeader />
       <main id="main" className="mx-auto max-w-3xl px-6 py-12">
         <Link

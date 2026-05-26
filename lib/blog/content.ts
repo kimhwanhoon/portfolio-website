@@ -1,3 +1,4 @@
+import { addHeadingIds } from "@/lib/blog/heading-ids";
 import { highlightCodeBlocks } from "@/lib/blog/highlight";
 import { calculateReadingMinutes } from "@/lib/blog/reading-time";
 import { sanitizePostHtml } from "@/lib/blog/sanitize";
@@ -8,7 +9,8 @@ export async function processPostContent(
   rawHtml: string,
 ) {
   const highlighted = await highlightCodeBlocks(rawHtml);
-  const contentHtml = sanitizePostHtml(highlighted);
+  const sanitized = sanitizePostHtml(highlighted);
+  const contentHtml = await addHeadingIds(sanitized);
   const readingMinutes = calculateReadingMinutes(contentJson);
 
   return { contentHtml, readingMinutes };

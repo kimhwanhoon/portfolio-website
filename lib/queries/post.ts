@@ -268,11 +268,14 @@ export async function getPublishedPostsPaginated({
 }
 
 export async function getAllPublishedPostSlugs() {
-  const items = await db
-    .select({ slug: posts.slug })
+  return db
+    .select({
+      slug: posts.slug,
+      updatedAt: posts.updatedAt,
+      coverImageUrl: posts.coverImageUrl,
+    })
     .from(posts)
     .where(eq(posts.status, "published"));
-  return items.map((i) => ({ slug: i.slug }));
 }
 
 export async function getAllTagsWithCounts() {

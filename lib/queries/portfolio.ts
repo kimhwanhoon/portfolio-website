@@ -99,6 +99,8 @@ export async function getPortfolioBySlug(
       status: portfolioItems.status,
       startDate: portfolioItems.startDate,
       endDate: portfolioItems.endDate,
+      createdAt: portfolioItems.createdAt,
+      updatedAt: portfolioItems.updatedAt,
       ...portfolioTranslationSelect(),
     })
     .from(portfolioItems)
@@ -122,6 +124,7 @@ export async function getPortfolioBySlug(
       sortOrder: images.sortOrder,
       width: images.width,
       height: images.height,
+      /** Locale alt with fallback to default locale (SEO + a11y). */
       alt: coalesceTranslation(imageT.alt, imageTEn.alt),
     })
     .from(images)
@@ -143,11 +146,14 @@ export async function getPortfolioBySlug(
 }
 
 export async function getAllPublishedSlugs() {
-  const items = await db
-    .select({ slug: portfolioItems.slug })
+  return db
+    .select({
+      slug: portfolioItems.slug,
+      updatedAt: portfolioItems.updatedAt,
+      thumbnailUrl: portfolioItems.thumbnailUrl,
+    })
     .from(portfolioItems)
     .where(eq(portfolioItems.status, "published"));
-  return items.map((i) => ({ slug: i.slug }));
 }
 
 export async function getAllPortfolioItemsForAdmin() {
