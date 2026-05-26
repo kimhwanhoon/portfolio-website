@@ -89,32 +89,3 @@ export async function updateImageAlt(id: string, alt: string) {
 
   revalidatePath("/admin/images");
 }
-
-export async function assignImagesToPortfolio(
-  imageIds: string[],
-  portfolioId: string,
-) {
-  await requireAdmin();
-
-  for (let i = 0; i < imageIds.length; i++) {
-    await db
-      .update(images)
-      .set({ portfolioId, sortOrder: i })
-      .where(eq(images.id, imageIds[i]));
-  }
-
-  revalidatePath("/admin");
-  revalidatePath("/admin/images");
-}
-
-export async function unassignImageFromPortfolio(imageId: string) {
-  await requireAdmin();
-
-  await db
-    .update(images)
-    .set({ portfolioId: null, sortOrder: 0 })
-    .where(eq(images.id, imageId));
-
-  revalidatePath("/admin");
-  revalidatePath("/admin/images");
-}

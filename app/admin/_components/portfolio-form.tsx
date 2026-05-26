@@ -107,8 +107,7 @@ export function PortfolioForm({
       if (isEditing) {
         await updatePortfolio(initialData.id, data, selectedImageIds);
       } else {
-        // For new items, images are assigned after creation via redirect
-        await createPortfolio(data);
+        await createPortfolio(data, selectedImageIds);
       }
     });
   }
@@ -248,12 +247,12 @@ export function PortfolioForm({
         </CardContent>
       </Card>
 
-      {isEditing && allImages.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Images</CardTitle>
-          </CardHeader>
-          <CardContent>
+      <Card>
+        <CardHeader>
+          <CardTitle>Images</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {allImages.length > 0 ? (
             <ImagePicker
               allImages={allImages}
               selectedIds={selectedImageIds}
@@ -261,9 +260,17 @@ export function PortfolioForm({
               onSelectionChange={setSelectedImageIds}
               onThumbnailChange={(url) => setValue("thumbnailUrl", url)}
             />
-          </CardContent>
-        </Card>
-      )}
+          ) : (
+            <p className="text-sm text-zinc-500">
+              No images available yet. Upload images in the{" "}
+              <a href="/admin/images" className="underline">
+                Images
+              </a>{" "}
+              section, then return here to attach them.
+            </p>
+          )}
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

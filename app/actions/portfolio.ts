@@ -1,7 +1,7 @@
 "use server";
 
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
-import { eq } from "drizzle-orm";
+import { and, eq, notInArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth/admin";
@@ -25,13 +25,46 @@ function revalidateAll() {
   revalidatePath("/");
 }
 
-export async function createPortfolio(data: unknown) {
+/**
+ * Sync the set of images belonging to a portfolio item:
+ * - Unlink any image currently attached to this portfolio that is NOT in
+ *   the desired set (sets portfolioId to null so it's available again).
+ * - Attach + reorder the desired set (sortOrder follows the array order).
+ * Pass an empty array to unlink everything.
+ */
+async function syncPortfolioImages(portfolioId: string, imageIds: string[]) {
+  if (imageIds.length === 0) {
+    await db
+      .update(images)
+      .set({ portfolioId: null, sortOrder: 0 })
+      .where(eq(images.portfolioId, portfolioId));
+    return;
+  }
+
+  // Unlink currently-attached images that are not in the new selection.
+  await db
+    .update(images)
+    .set({ portfolioId: null, sortOrder: 0 })
+    .where(
+      and(eq(images.portfolioId, portfolioId), notInArray(images.id, imageIds)),
+    );
+
+  // Attach + order the selected images. Done one-by-one because sortOrder
+  // differs per row; row count is bounded by gallery size (small).
+  for (let i = 0; i < imageIds.length; i++) {
+    await db
+      .update(images)
+      .set({ portfolioId, sortOrder: i })
+      .where(eq(images.id, imageIds[i]));
+  }
+}
+
+export async function createPortfolio(data: unknown, imageIds?: string[]) {
   await requireAdmin();
   const validated = portfolioSchema.parse(data);
 
   const slug = validated.slug || slugify(validated.title);
 
-  // Insert base item (language-agnostic fields)
   const [inserted] = await db
     .insert(portfolioItems)
     .values({
@@ -48,7 +81,6 @@ export async function createPortfolio(data: unknown) {
     })
     .returning({ id: portfolioItems.id });
 
-  // Insert English translation
   await db.insert(portfolioTranslations).values({
     portfolioId: inserted.id,
     locale: "en",
@@ -56,6 +88,10 @@ export async function createPortfolio(data: unknown) {
     shortDescription: validated.shortDescription,
     fullDescription: validated.fullDescription,
   });
+
+  if (imageIds) {
+    await syncPortfolioImages(inserted.id, imageIds);
+  }
 
   revalidateAll();
   redirect("/admin");
@@ -116,14 +152,8 @@ export async function updatePortfolio(
     });
   }
 
-  // Assign images if provided
-  if (imageIds && imageIds.length > 0) {
-    for (let i = 0; i < imageIds.length; i++) {
-      await db
-        .update(images)
-        .set({ portfolioId: id, sortOrder: i })
-        .where(eq(images.id, imageIds[i]));
-    }
+  if (imageIds) {
+    await syncPortfolioImages(id, imageIds);
   }
 
   revalidateAll();
