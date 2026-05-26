@@ -11,13 +11,11 @@ import { Badge } from "@/components/ui/badge";
 import type { Locale } from "@/i18n/routing";
 import { getAllPublishedPostSlugs, getPostBySlug } from "@/lib/queries/post";
 
-function formatDate(date: Date | null, fallback: Date) {
-  const d = date ?? fallback;
-  return d.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://kimhwanhoon.com";
+const AUTHOR_NAME = "Kim Hwanhoon";
+
+function toIsoDate(date: Date | null, fallback: Date) {
+  return (date ?? fallback).toISOString();
 }
 
 export async function generateMetadata({
@@ -29,10 +27,26 @@ export async function generateMetadata({
   const post = await getPostBySlug(slug, locale as Locale);
   if (!post) return {};
 
+  const canonical = `${BASE_URL}/${locale}/blog/${slug}`;
+  const publishedTime = toIsoDate(post.publishedAt, post.createdAt);
+  const modifiedTime = toIsoDate(post.updatedAt, post.createdAt);
+
   return {
     title: post.title,
     description: post.excerpt,
+    alternates: { canonical },
     openGraph: {
+      type: "article",
+      title: post.title,
+      description: post.excerpt,
+      url: canonical,
+      locale: "en_US",
+      publishedTime,
+      modifiedTime,
+      authors: [AUTHOR_NAME],
+    },
+    twitter: {
+      card: "summary_large_image",
       title: post.title,
       description: post.excerpt,
     },
@@ -55,12 +69,33 @@ export default async function BlogPostPage({
   const post = await getPostBySlug(slug, locale as Locale);
   if (!post) notFound();
 
-  const displayDate = formatDate(post.publishedAt, post.updatedAt);
+  const publishedDate = post.publishedAt ?? post.createdAt;
+  const modifiedDate = post.updatedAt;
+  const articleUrl = `${BASE_URL}/${locale}/blog/${slug}`;
+
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title,
+    description: post.excerpt,
+    datePublished: publishedDate.toISOString(),
+    dateModified: modifiedDate.toISOString(),
+    author: {
+      "@type": "Person",
+      name: AUTHOR_NAME,
+    },
+    url: articleUrl,
+    ...(post.coverImageUrl ? { image: [post.coverImageUrl] } : {}),
+  };
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
       <SiteHeader />
-      <main>
+      <main id="main">
         <div className="mx-auto max-w-5xl px-6 pt-10 md:pt-16">
           <Link
             href={`/${locale}/blog`}
@@ -90,7 +125,15 @@ export default async function BlogPostPage({
             </p>
           )}
           <div className="mt-4 flex items-end justify-end gap-3 border-t border-border py-4 text-sm text-muted-foreground">
-            <span>{displayDate}</span>
+            <time dateTime={publishedDate.toISOString()}>
+              {t("publishedOn", {
+                date: publishedDate.toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                }),
+              })}
+            </time>
             <span aria-hidden="true">·</span>
             <span>{t("readMin", { minutes: post.readingMinutes })}</span>
           </div>

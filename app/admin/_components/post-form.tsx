@@ -18,7 +18,11 @@ import {
   postFormSchema,
   postSchema,
 } from "@/lib/validators/post";
-import { TiptapEditor, type TiptapEditorRef } from "./tiptap-editor";
+import {
+  EMPTY_TIPTAP_DOC,
+  TiptapEditor,
+  type TiptapEditorRef,
+} from "./tiptap-editor";
 import {
   type PostAutosaveSnapshot,
   usePostAutosave,
@@ -40,6 +44,7 @@ interface PostFormProps {
     status: "draft" | "published";
     featured: boolean;
     publishedAt: Date | null;
+    updatedAt: Date;
     contentJson: TiptapJSON;
     tags: { slug: string; name: string }[];
   };
@@ -129,10 +134,7 @@ export function PostForm({ initialData, availableImages = [] }: PostFormProps) {
         slug: slug ?? "",
         excerpt,
         coverImageUrl: coverImageUrl ?? "",
-        contentJson: editorRef.current?.getContent().json ?? {
-          type: "doc",
-          content: [{ type: "paragraph" }],
-        },
+        contentJson: editorRef.current?.getContent().json ?? EMPTY_TIPTAP_DOC,
         tagSlugs: (tagsField ?? "")
           .split(",")
           .map((t) => t.trim())
@@ -146,8 +148,18 @@ export function PostForm({ initialData, availableImages = [] }: PostFormProps) {
 
   useEffect(() => {
     const draft = restore();
-    if (draft) setPendingDraft(draft);
-  }, [restore]);
+    if (!draft) return;
+
+    if (
+      initialData?.updatedAt &&
+      new Date(draft.savedAt) <= new Date(initialData.updatedAt)
+    ) {
+      clear();
+      return;
+    }
+
+    setPendingDraft(draft);
+  }, [restore, clear, initialData?.updatedAt]);
 
   function restoreDraft() {
     if (!pendingDraft) return;
@@ -178,15 +190,14 @@ export function PostForm({ initialData, availableImages = [] }: PostFormProps) {
 
   function onTitleBlur(e: React.FocusEvent<HTMLInputElement>) {
     const currentSlug = watch("slug");
-    if (!currentSlug || !isEditing) {
+    if (!currentSlug?.trim()) {
       setValue("slug", slugify(e.target.value));
     }
   }
 
   function onSubmit(data: PostFormInput) {
-    const { json, html } = editorRef.current?.getContent() ?? {
-      json: { type: "doc", content: [] },
-      html: "",
+    const { json } = editorRef.current?.getContent() ?? {
+      json: EMPTY_TIPTAP_DOC,
     };
 
     const tagsField = (
@@ -196,7 +207,6 @@ export function PostForm({ initialData, availableImages = [] }: PostFormProps) {
     const payload: PostFormData = {
       ...data,
       contentJson: json as PostFormData["contentJson"],
-      contentHtml: html,
       tagSlugs: (tagsField ?? "")
         .split(",")
         .map((t) => t.trim())
@@ -221,9 +231,11 @@ export function PostForm({ initialData, availableImages = [] }: PostFormProps) {
         } else {
           await createPost(parsed.data);
         }
-        clear();
       } catch (e) {
-        if (isRedirectError(e)) throw e;
+        if (isRedirectError(e)) {
+          clear();
+          throw e;
+        }
         setError(e instanceof Error ? e.message : "Failed to save post");
       }
     });
@@ -370,12 +382,7 @@ export function PostForm({ initialData, availableImages = [] }: PostFormProps) {
           <TiptapEditor
             key={editorKey}
             ref={editorRef}
-            initialContent={
-              editorContent ?? {
-                type: "doc",
-                content: [{ type: "paragraph" }],
-              }
-            }
+            initialContent={editorContent ?? EMPTY_TIPTAP_DOC}
             availableImages={availableImages}
             onUpdate={() => setEditorDirty(true)}
           />

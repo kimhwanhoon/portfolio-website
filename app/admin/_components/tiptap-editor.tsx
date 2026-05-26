@@ -3,7 +3,6 @@
 import {
   IconBold,
   IconCode,
-  IconH1,
   IconH2,
   IconH3,
   IconItalic,
@@ -22,7 +21,7 @@ import Typography from "@tiptap/extension-typography";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { common, createLowlight } from "lowlight";
-import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { forwardRef, useImperativeHandle, useState } from "react";
 import { Markdown } from "tiptap-markdown";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,6 +34,11 @@ import type { TiptapJSON } from "@/lib/db/schema";
 import { cn } from "@/lib/utils";
 
 const lowlight = createLowlight(common);
+
+export const EMPTY_TIPTAP_DOC: TiptapJSON = {
+  type: "doc",
+  content: [{ type: "paragraph" }],
+};
 
 const CodeBlockWithLanguage = CodeBlockLowlight.extend({
   addInputRules() {
@@ -108,7 +112,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
       extensions: [
         StarterKit.configure({
           codeBlock: false,
-          heading: { levels: [1, 2, 3] },
+          heading: { levels: [2, 3] },
           link: false,
         }),
         Link.configure({
@@ -139,10 +143,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
           transformCopiedText: false,
         }),
       ],
-      content: initialContent ?? {
-        type: "doc",
-        content: [{ type: "paragraph" }],
-      },
+      content: initialContent ?? EMPTY_TIPTAP_DOC,
       onUpdate: ({ editor: instance }) => {
         onUpdate?.(instance.getJSON() as TiptapJSON, instance.getHTML());
       },
@@ -156,16 +157,10 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 
     useImperativeHandle(ref, () => ({
       getContent: () => ({
-        json: (editor?.getJSON() ?? { type: "doc", content: [] }) as TiptapJSON,
+        json: (editor?.getJSON() ?? EMPTY_TIPTAP_DOC) as TiptapJSON,
         html: editor?.getHTML() ?? "",
       }),
     }));
-
-    useEffect(() => {
-      if (editor && initialContent && !editor.isDestroyed) {
-        editor.commands.setContent(initialContent);
-      }
-    }, [editor, initialContent]);
 
     if (!editor) return null;
 
@@ -206,15 +201,6 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
             active={editor.isActive("italic")}
           >
             <IconItalic className="size-4" />
-          </ToolbarButton>
-          <ToolbarButton
-            label="Heading 1"
-            onClick={() =>
-              editor.chain().focus().toggleHeading({ level: 1 }).run()
-            }
-            active={editor.isActive("heading", { level: 1 })}
-          >
-            <IconH1 className="size-4" />
           </ToolbarButton>
           <ToolbarButton
             label="Heading 2"

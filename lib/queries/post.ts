@@ -336,6 +336,7 @@ export async function getPostForEdit(id: string) {
       featured: posts.featured,
       readingMinutes: posts.readingMinutes,
       publishedAt: posts.publishedAt,
+      updatedAt: posts.updatedAt,
       title: postTranslations.title,
       excerpt: postTranslations.excerpt,
       contentJson: postTranslations.contentJson,

@@ -17,6 +17,7 @@ export function TagFilter({ tags, activeTag }: TagFilterProps) {
 
   function setTag(slug: string | null) {
     const params = new URLSearchParams(searchParams.toString());
+    params.delete("page");
     if (slug) {
       params.set("tag", slug);
     } else {
@@ -31,12 +32,17 @@ export function TagFilter({ tags, activeTag }: TagFilterProps) {
   if (tags.length === 0) return null;
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div
+      className="flex flex-wrap gap-2"
+      role="group"
+      aria-label={t("filterByTag")}
+    >
       <button
         type="button"
         onClick={() => setTag(null)}
+        aria-pressed={!activeTag}
         className={cn(
-          "rounded-full border px-3 py-1 text-sm transition-colors",
+          "rounded-full border px-3 py-1 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
           !activeTag
             ? "border-foreground bg-foreground text-background"
             : "border-border text-muted-foreground hover:border-foreground hover:text-foreground",
@@ -49,8 +55,9 @@ export function TagFilter({ tags, activeTag }: TagFilterProps) {
           key={tag.slug}
           type="button"
           onClick={() => setTag(tag.slug)}
+          aria-pressed={activeTag === tag.slug}
           className={cn(
-            "rounded-full border px-3 py-1 text-sm transition-colors",
+            "rounded-full border px-3 py-1 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
             activeTag === tag.slug
               ? "border-foreground bg-foreground text-background"
               : "border-border text-muted-foreground hover:border-foreground hover:text-foreground",

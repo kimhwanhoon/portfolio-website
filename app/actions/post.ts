@@ -1,8 +1,9 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { routing } from "@/i18n/routing";
 import { requireAdmin } from "@/lib/auth/admin";
 import { processPostContent } from "@/lib/blog/content";
 import { db } from "@/lib/db";
@@ -10,6 +11,8 @@ import { isUniqueViolation } from "@/lib/db/errors";
 import type { TiptapJSON } from "@/lib/db/schema";
 import { posts, postTags, postTranslations, tags } from "@/lib/db/schema";
 import { postSchema } from "@/lib/validators/post";
+
+const POST_LOCALE = "en";
 
 function slugify(text: string): string {
   return text
@@ -20,73 +23,113 @@ function slugify(text: string): string {
     .trim();
 }
 
-function revalidateBlogPaths() {
-  revalidatePath("/admin/posts");
-  revalidatePath("/en/blog");
-  revalidatePath("/");
+function resolveSlug(data: { slug?: string; title: string }): string {
+  const slug = data.slug?.trim()
+    ? slugify(data.slug.trim())
+    : slugify(data.title);
+  if (!slug) {
+    throw new Error(
+      "Could not generate a valid slug. Please provide a slug or title.",
+    );
+  }
+  return slug;
 }
 
-async function clearFeaturedPosts() {
-  await db.update(posts).set({ featured: false, updatedAt: new Date() });
+function revalidateBlogPaths(slugs: string[] = []) {
+  const uniqueSlugs = [...new Set(slugs.filter(Boolean))];
+
+  revalidatePath("/admin/posts");
+  revalidatePath("/sitemap.xml");
+
+  for (const locale of routing.locales) {
+    revalidatePath(`/${locale}/blog`);
+    for (const slug of uniqueSlugs) {
+      revalidatePath(`/${locale}/blog/${slug}`);
+    }
+  }
+}
+
+async function setExclusiveFeatured(postId: string) {
+  await db.update(posts).set({
+    featured: sql`${posts.id} = ${postId}`,
+    updatedAt: new Date(),
+  });
+}
+
+async function findTagBySlug(slug: string) {
+  const existing = await db
+    .select({ id: tags.id })
+    .from(tags)
+    .where(eq(tags.slug, slug))
+    .limit(1);
+  return existing[0]?.id ?? null;
 }
 
 async function ensureTags(tagSlugs: string[]): Promise<string[]> {
   const ids: string[] = [];
 
   for (const raw of tagSlugs) {
-    const slug = slugify(raw);
+    const slug = slugify(raw.trim());
     if (!slug) continue;
 
-    const name = raw.trim();
-    const existing = await db
-      .select({ id: tags.id })
-      .from(tags)
-      .where(eq(tags.slug, slug))
-      .limit(1);
-
-    if (existing[0]) {
-      ids.push(existing[0].id);
+    const existingId = await findTagBySlug(slug);
+    if (existingId) {
+      ids.push(existingId);
       continue;
     }
 
-    const [inserted] = await db
-      .insert(tags)
-      .values({ slug, name })
-      .returning({ id: tags.id });
-    ids.push(inserted.id);
+    const name = raw.trim() || slug;
+    try {
+      const [inserted] = await db
+        .insert(tags)
+        .values({ slug, name })
+        .returning({ id: tags.id });
+      ids.push(inserted.id);
+    } catch (e) {
+      if (isUniqueViolation(e, "tags_slug_unique")) {
+        const racedId = await findTagBySlug(slug);
+        if (racedId) ids.push(racedId);
+        continue;
+      }
+      throw e;
+    }
   }
 
   return ids;
 }
 
 async function syncPostTags(postId: string, tagSlugs: string[]) {
-  await db.delete(postTags).where(eq(postTags.postId, postId));
-  const tagIds = await ensureTags(tagSlugs);
+  const normalized = [
+    ...new Set(
+      tagSlugs
+        .map((raw) => slugify(raw.trim()))
+        .filter((slug) => slug.length > 0),
+    ),
+  ];
 
-  if (tagIds.length > 0) {
+  await db.delete(postTags).where(eq(postTags.postId, postId));
+  const tagIds = await ensureTags(normalized);
+
+  const uniqueTagIds = [...new Set(tagIds)];
+  if (uniqueTagIds.length > 0) {
     await db
       .insert(postTags)
-      .values(tagIds.map((tagId) => ({ postId, tagId })));
+      .values(uniqueTagIds.map((tagId) => ({ postId, tagId })));
   }
 }
 
 export async function createPost(data: unknown) {
   await requireAdmin();
   const validated = postSchema.parse(data);
-  const slug = validated.slug || slugify(validated.title);
+  const slug = resolveSlug(validated);
   const { contentHtml, readingMinutes } = await processPostContent(
     validated.contentJson as TiptapJSON,
-    validated.contentHtml,
   );
 
   const publishedAt =
     validated.status === "published"
       ? (validated.publishedAt ?? new Date())
       : (validated.publishedAt ?? null);
-
-  if (validated.featured) {
-    await clearFeaturedPosts();
-  }
 
   let inserted: { id: string };
   try {
@@ -110,9 +153,13 @@ export async function createPost(data: unknown) {
     throw e;
   }
 
+  if (validated.featured) {
+    await setExclusiveFeatured(inserted.id);
+  }
+
   await db.insert(postTranslations).values({
     postId: inserted.id,
-    locale: "en",
+    locale: POST_LOCALE,
     title: validated.title,
     excerpt: validated.excerpt,
     contentJson: validated.contentJson as TiptapJSON,
@@ -121,17 +168,26 @@ export async function createPost(data: unknown) {
 
   await syncPostTags(inserted.id, validated.tagSlugs);
 
-  revalidateBlogPaths();
+  revalidateBlogPaths([slug]);
   redirect("/admin/posts");
 }
 
 export async function updatePost(id: string, data: unknown) {
   await requireAdmin();
   const validated = postSchema.parse(data);
-  const slug = validated.slug || slugify(validated.title);
+  const slug = resolveSlug(validated);
+
+  const existingPost = await db.query.posts.findFirst({
+    where: eq(posts.id, id),
+    columns: { slug: true },
+  });
+  if (!existingPost) {
+    throw new Error("Post not found");
+  }
+
+  const oldSlug = existingPost.slug;
   const { contentHtml, readingMinutes } = await processPostContent(
     validated.contentJson as TiptapJSON,
-    validated.contentHtml,
   );
 
   const publishedAt =
@@ -140,7 +196,7 @@ export async function updatePost(id: string, data: unknown) {
       : (validated.publishedAt ?? null);
 
   if (validated.featured) {
-    await clearFeaturedPosts();
+    await setExclusiveFeatured(id);
   }
 
   try {
@@ -165,13 +221,18 @@ export async function updatePost(id: string, data: unknown) {
     throw e;
   }
 
-  const existing = await db
+  const existingTranslation = await db
     .select()
     .from(postTranslations)
-    .where(eq(postTranslations.postId, id))
+    .where(
+      and(
+        eq(postTranslations.postId, id),
+        eq(postTranslations.locale, POST_LOCALE),
+      ),
+    )
     .limit(1);
 
-  if (existing.length > 0) {
+  if (existingTranslation.length > 0) {
     await db
       .update(postTranslations)
       .set({
@@ -181,11 +242,16 @@ export async function updatePost(id: string, data: unknown) {
         contentHtml,
         updatedAt: new Date(),
       })
-      .where(eq(postTranslations.postId, id));
+      .where(
+        and(
+          eq(postTranslations.postId, id),
+          eq(postTranslations.locale, POST_LOCALE),
+        ),
+      );
   } else {
     await db.insert(postTranslations).values({
       postId: id,
-      locale: "en",
+      locale: POST_LOCALE,
       title: validated.title,
       excerpt: validated.excerpt,
       contentJson: validated.contentJson as TiptapJSON,
@@ -195,14 +261,20 @@ export async function updatePost(id: string, data: unknown) {
 
   await syncPostTags(id, validated.tagSlugs);
 
-  revalidateBlogPaths();
+  revalidateBlogPaths([oldSlug, slug]);
   redirect("/admin/posts");
 }
 
 export async function deletePost(id: string) {
   await requireAdmin();
+
+  const existingPost = await db.query.posts.findFirst({
+    where: eq(posts.id, id),
+    columns: { slug: true },
+  });
+
   await db.delete(posts).where(eq(posts.id, id));
-  revalidateBlogPaths();
+  revalidateBlogPaths(existingPost?.slug ? [existingPost.slug] : []);
 }
 
 export async function togglePostStatus(id: string) {
@@ -210,6 +282,7 @@ export async function togglePostStatus(id: string) {
 
   const item = await db.query.posts.findFirst({
     where: eq(posts.id, id),
+    columns: { id: true, status: true, publishedAt: true, slug: true },
   });
   if (!item) throw new Error("Not found");
 
@@ -228,7 +301,7 @@ export async function togglePostStatus(id: string) {
     })
     .where(eq(posts.id, id));
 
-  revalidateBlogPaths();
+  revalidateBlogPaths([item.slug]);
 }
 
 export async function togglePostFeatured(id: string) {
@@ -236,15 +309,12 @@ export async function togglePostFeatured(id: string) {
 
   const item = await db.query.posts.findFirst({
     where: eq(posts.id, id),
+    columns: { id: true, featured: true, slug: true },
   });
   if (!item) throw new Error("Not found");
 
   if (!item.featured) {
-    await db.update(posts).set({ featured: false, updatedAt: new Date() });
-    await db
-      .update(posts)
-      .set({ featured: true, updatedAt: new Date() })
-      .where(eq(posts.id, id));
+    await setExclusiveFeatured(id);
   } else {
     await db
       .update(posts)
@@ -252,5 +322,5 @@ export async function togglePostFeatured(id: string) {
       .where(eq(posts.id, id));
   }
 
-  revalidateBlogPaths();
+  revalidateBlogPaths([item.slug]);
 }

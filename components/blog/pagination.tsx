@@ -60,14 +60,14 @@ export function Pagination({ page, totalPages }: PaginationProps) {
   return (
     <nav
       className="mt-12 flex flex-wrap items-center justify-center gap-2"
-      aria-label="Blog pagination"
+      aria-label={t("paginationLabel")}
     >
       <button
         type="button"
         onClick={() => goToPage(page - 1)}
         disabled={page <= 1}
         className={cn(
-          "rounded-full border px-4 py-1.5 text-sm transition-colors",
+          "rounded-full border px-4 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
           page <= 1
             ? "cursor-not-allowed opacity-40"
             : "hover:border-foreground hover:text-foreground",
@@ -88,7 +88,7 @@ export function Pagination({ page, totalPages }: PaginationProps) {
             onClick={() => goToPage(num)}
             aria-current={num === page ? "page" : undefined}
             className={cn(
-              "min-w-9 rounded-full border px-3 py-1.5 text-sm transition-colors",
+              "min-w-9 rounded-full border px-3 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
               num === page
                 ? "border-foreground bg-foreground text-background"
                 : "hover:border-foreground hover:text-foreground",
@@ -104,7 +104,7 @@ export function Pagination({ page, totalPages }: PaginationProps) {
         onClick={() => goToPage(page + 1)}
         disabled={page >= totalPages}
         className={cn(
-          "rounded-full border px-4 py-1.5 text-sm transition-colors",
+          "rounded-full border px-4 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
           page >= totalPages
             ? "cursor-not-allowed opacity-40"
             : "hover:border-foreground hover:text-foreground",
