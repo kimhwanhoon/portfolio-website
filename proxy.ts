@@ -15,6 +15,15 @@ const isIgnoredPath = createRouteMatcher([
   "/api(.*)",
   "/sitemap.xml",
   "/robots.txt",
+  // Next.js generated metadata / asset routes (live at root, not under [locale])
+  "/icon(.*)",
+  "/apple-icon(.*)",
+  "/opengraph-image(.*)",
+  "/twitter-image(.*)",
+  "/favicon.ico",
+  "/manifest.webmanifest",
+  // DevTools / browser well-known probes
+  "/.well-known/(.*)",
 ]);
 
 const handler = clerkMiddleware(async (auth, req) => {
