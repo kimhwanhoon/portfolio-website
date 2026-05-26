@@ -18,6 +18,7 @@ export function SiteHeader() {
 
   const navLinks = [
     { label: t("portfolio"), href: `/${locale}#portfolio` },
+    { label: t("blog"), href: `/${locale}/blog` },
     { label: t("about"), href: `/${locale}/about` },
     { label: t("contact"), href: `/${locale}#contact` },
   ];

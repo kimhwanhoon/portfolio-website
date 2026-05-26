@@ -5,6 +5,7 @@ import {
   jsonb,
   pgEnum,
   pgTable,
+  primaryKey,
   text,
   timestamp,
   uniqueIndex,
@@ -113,3 +114,86 @@ export const imageTranslationsRelations = relations(
     }),
   }),
 );
+
+// Blog
+export type TiptapJSON = Record<string, unknown>;
+
+export const posts = pgTable("posts", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  slug: varchar("slug", { length: 255 }).notNull().unique(),
+  coverImageUrl: text("cover_image_url"),
+  status: statusEnum("status").default("draft").notNull(),
+  featured: boolean("featured").default(false).notNull(),
+  readingMinutes: integer("reading_minutes").default(1).notNull(),
+  publishedAt: timestamp("published_at", { mode: "date" }),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+});
+
+export const postTranslations = pgTable(
+  "post_translations",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    postId: uuid("post_id")
+      .references(() => posts.id, { onDelete: "cascade" })
+      .notNull(),
+    locale: varchar("locale", { length: 10 }).notNull(),
+    title: varchar("title", { length: 255 }).notNull(),
+    excerpt: text("excerpt").notNull(),
+    contentJson: jsonb("content_json").$type<TiptapJSON>().notNull(),
+    contentHtml: text("content_html").notNull(),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+  },
+  (table) => [uniqueIndex("post_locale_idx").on(table.postId, table.locale)],
+);
+
+export const tags = pgTable("tags", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  slug: varchar("slug", { length: 100 }).notNull().unique(),
+  name: varchar("name", { length: 100 }).notNull(),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+});
+
+export const postTags = pgTable(
+  "post_tags",
+  {
+    postId: uuid("post_id")
+      .references(() => posts.id, { onDelete: "cascade" })
+      .notNull(),
+    tagId: uuid("tag_id")
+      .references(() => tags.id, { onDelete: "cascade" })
+      .notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.postId, table.tagId] })],
+);
+
+export const postsRelations = relations(posts, ({ many }) => ({
+  translations: many(postTranslations),
+  postTags: many(postTags),
+}));
+
+export const postTranslationsRelations = relations(
+  postTranslations,
+  ({ one }) => ({
+    post: one(posts, {
+      fields: [postTranslations.postId],
+      references: [posts.id],
+    }),
+  }),
+);
+
+export const tagsRelations = relations(tags, ({ many }) => ({
+  postTags: many(postTags),
+}));
+
+export const postTagsRelations = relations(postTags, ({ one }) => ({
+  post: one(posts, {
+    fields: [postTags.postId],
+    references: [posts.id],
+  }),
+  tag: one(tags, {
+    fields: [postTags.tagId],
+    references: [tags.id],
+  }),
+}));

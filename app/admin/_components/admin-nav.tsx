@@ -1,7 +1,13 @@
 "use client";
 
 import { UserButton } from "@clerk/nextjs";
-import { IconLayoutDashboard, IconPhoto, IconPlus } from "@tabler/icons-react";
+import {
+  IconArticle,
+  IconExternalLink,
+  IconLayoutDashboard,
+  IconPhoto,
+  IconPlus,
+} from "@tabler/icons-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
@@ -12,16 +18,25 @@ const navItems = [
     label: "Portfolio",
     href: "/admin",
     icon: IconLayoutDashboard,
+    exact: true,
   },
   {
     label: "New Item",
     href: "/admin/new",
     icon: IconPlus,
+    exact: false,
+  },
+  {
+    label: "Posts",
+    href: "/admin/posts",
+    icon: IconArticle,
+    exact: false,
   },
   {
     label: "Images",
     href: "/admin/images",
     icon: IconPhoto,
+    exact: false,
   },
 ];
 
@@ -38,10 +53,9 @@ export function AdminNav() {
       </div>
       <nav className="flex flex-1 flex-col gap-1 p-3">
         {navItems.map((item) => {
-          const isActive =
-            item.href === "/admin"
-              ? pathname === "/admin"
-              : pathname.startsWith(item.href);
+          const isActive = item.exact
+            ? pathname === item.href
+            : pathname.startsWith(item.href);
           return (
             <Link
               key={item.href}
@@ -59,7 +73,18 @@ export function AdminNav() {
           );
         })}
       </nav>
-      <div className="border-t p-4">
+      <div className="flex flex-col gap-3 border-t p-4">
+        <Link
+          href="/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+        >
+          <span className="flex items-center gap-2">
+            <IconExternalLink className="size-4" />
+            View site
+          </span>
+        </Link>
         <UserButton />
       </div>
     </aside>

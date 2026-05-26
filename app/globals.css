@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
@@ -131,6 +132,81 @@
     @apply font-sans;
     scroll-behavior: smooth;
   }
+}
+
+/* Inline code */
+.post-content :not(pre) > code {
+  @apply rounded-md border border-border bg-muted px-1.5 py-0.5 font-mono text-[0.875em] font-medium text-foreground;
+}
+.post-content :not(pre) > code::before,
+.post-content :not(pre) > code::after {
+  content: none;
+}
+
+/* Code blocks */
+.post-content pre {
+  @apply overflow-x-auto rounded-xl border border-border bg-[oklch(0.16_0.005_228.8)] p-5 text-sm leading-relaxed;
+}
+
+.post-content pre code {
+  @apply bg-transparent p-0 font-mono text-[0.95em] font-normal text-[oklch(0.92_0.005_228.8)];
+}
+
+/* highlight.js token colors — applied wherever hljs spans appear (post body + editor) */
+.hljs-comment,
+.hljs-quote {
+  color: oklch(0.6 0.02 228.8);
+  font-style: italic;
+}
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-section,
+.hljs-link {
+  color: oklch(0.78 0.18 290);
+}
+.hljs-string,
+.hljs-attr,
+.hljs-template-tag,
+.hljs-template-variable,
+.hljs-regexp,
+.hljs-addition {
+  color: oklch(0.82 0.16 145);
+}
+.hljs-title,
+.hljs-name,
+.hljs-type,
+.hljs-attribute,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-built_in,
+.hljs-builtin-name {
+  color: oklch(0.85 0.14 80);
+}
+.hljs-number,
+.hljs-meta {
+  color: oklch(0.78 0.15 50);
+}
+.hljs-deletion,
+.hljs-variable {
+  color: oklch(0.7 0.18 25);
+}
+.hljs-emphasis {
+  font-style: italic;
+}
+.hljs-strong {
+  font-weight: 700;
+}
+
+/* Editor code block: match the public site look so what you see is what you get */
+.ProseMirror pre {
+  @apply overflow-x-auto rounded-xl border border-border bg-[oklch(0.16_0.005_228.8)] p-5 text-sm leading-relaxed text-[oklch(0.92_0.005_228.8)];
+}
+.ProseMirror pre code {
+  @apply bg-transparent p-0 font-mono text-[0.95em] font-normal text-[oklch(0.92_0.005_228.8)];
+}
+.ProseMirror :not(pre) > code {
+  @apply rounded-md border border-border bg-muted px-1.5 py-0.5 font-mono text-[0.875em] font-medium text-foreground;
 }
 
 @media (prefers-reduced-motion: reduce) {

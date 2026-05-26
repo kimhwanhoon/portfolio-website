@@ -1,13 +1,17 @@
 import type { MetadataRoute } from "next";
 import { routing } from "@/i18n/routing";
 import { getAllPublishedSlugs } from "@/lib/queries/portfolio";
+import { getAllPublishedPostSlugs } from "@/lib/queries/post";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://kimhwanhoon.com";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const slugs = await getAllPublishedSlugs();
+  const [portfolioSlugs, postSlugs] = await Promise.all([
+    getAllPublishedSlugs(),
+    getAllPublishedPostSlugs(),
+  ]);
 
-  const portfolioEntries = slugs.map(({ slug }) => ({
+  const portfolioEntries = portfolioSlugs.map(({ slug }) => ({
     url: `${BASE_URL}/${routing.defaultLocale}/portfolio/${slug}`,
     lastModified: new Date(),
     changeFrequency: "monthly" as const,
@@ -27,6 +31,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.9,
     },
+    {
+      url: `${BASE_URL}/${routing.defaultLocale}/blog`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
     ...portfolioEntries,
+    ...postSlugs.map(({ slug }) => ({
+      url: `${BASE_URL}/${routing.defaultLocale}/blog/${slug}`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    })),
   ];
 }

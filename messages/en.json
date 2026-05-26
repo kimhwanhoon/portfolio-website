@@ -6,6 +6,7 @@
   },
   "nav": {
     "portfolio": "Portfolio",
+    "blog": "Blog",
     "about": "About",
     "contact": "Contact",
     "openMenu": "Open menu",
@@ -80,6 +81,28 @@
   },
   "common": {
     "skipToContent": "Skip to content"
+  },
+  "blog": {
+    "heading": "Blog",
+    "subtitle": "Thoughts on frontend development, tools, and craft.",
+    "featuredLabel": "Featured",
+    "readMin": "{minutes} min read",
+    "emptyState": "No posts yet. Check back soon.",
+    "emptyForTag": "No posts with this tag yet.",
+    "filterByTag": "Filter posts by tag",
+    "paginationLabel": "Blog pagination",
+    "allTags": "All",
+    "backToBlog": "Back to blog",
+    "publishedOn": "Published {date}",
+    "noCover": "No cover image",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {current} of {total}",
+    "draftAvailable": "Draft from {time} available",
+    "restoreDraft": "Restore",
+    "discardDraft": "Discard",
+    "draftSaved": "Saved {time}",
+    "slugConflict": "A post with this slug already exists. Choose a different slug."
   },
   "theme": {
     "toggle": "Toggle theme",
