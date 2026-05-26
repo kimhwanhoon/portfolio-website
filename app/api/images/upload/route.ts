@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { auth } from "@clerk/nextjs/server";
+import { isAdmin } from "@/lib/auth/admin";
 import { R2_BUCKET, R2_PUBLIC_URL, r2Client } from "@/lib/r2/client";
 
 const ALLOWED_TYPES = [
@@ -10,11 +11,12 @@ const ALLOWED_TYPES = [
   "image/gif",
   "image/avif",
 ];
-const MAX_SIZE = 50 * 1024 * 1024; // 50MB
+const MAX_SIZE_MB = 10;
+const MAX_SIZE = MAX_SIZE_MB * 1024 * 1024;
 
 export async function POST(request: Request) {
   const { userId } = await auth();
-  if (!userId) {
+  if (!isAdmin(userId)) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -34,7 +36,7 @@ export async function POST(request: Request) {
 
   if (file.size > MAX_SIZE) {
     return Response.json(
-      { error: "File too large. Maximum size: 10MB" },
+      { error: `File too large. Maximum size: ${MAX_SIZE_MB}MB` },
       { status: 400 },
     );
   }

@@ -1,18 +1,12 @@
 "use server";
 
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
-import { auth } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/auth/admin";
 import { db } from "@/lib/db";
 import { images, imageTranslations } from "@/lib/db/schema";
 import { R2_BUCKET, r2Client } from "@/lib/r2/client";
-
-async function requireAdmin() {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
-  return userId;
-}
 
 export async function saveImageRecord(data: {
   url: string;

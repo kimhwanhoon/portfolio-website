@@ -16,9 +16,9 @@ export function SiteHeader() {
   const locale = useLocale();
 
   const navLinks = [
-    { label: t("portfolio"), href: "#portfolio" },
+    { label: t("portfolio"), href: `/${locale}#portfolio` },
     { label: t("about"), href: `/${locale}/about` },
-    { label: t("contact"), href: "#contact" },
+    { label: t("contact"), href: `/${locale}#contact` },
   ];
 
   return (
