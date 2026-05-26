@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import Image from "next/image";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { createPortfolio, updatePortfolio } from "@/app/actions/portfolio";
@@ -92,6 +93,7 @@ export function PortfolioForm({
 
   const featured = watch("featured");
   const status = watch("status");
+  const thumbnailUrl = watch("thumbnailUrl");
 
   function onTitleBlur(e: React.FocusEvent<HTMLInputElement>) {
     const currentSlug = watch("slug");
@@ -151,6 +153,31 @@ export function PortfolioForm({
               <p className="text-sm text-red-500">
                 {errors.shortDescription.message}
               </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="thumbnailUrl">Thumbnail URL</Label>
+            <Input
+              id="thumbnailUrl"
+              placeholder="https://... (or pick from gallery below)"
+              {...register("thumbnailUrl")}
+            />
+            {errors.thumbnailUrl && (
+              <p className="text-sm text-red-500">
+                {errors.thumbnailUrl.message}
+              </p>
+            )}
+            {thumbnailUrl && (
+              <div className="relative mt-2 aspect-video w-48 overflow-hidden rounded-md border">
+                <Image
+                  src={thumbnailUrl}
+                  alt="Thumbnail preview"
+                  fill
+                  className="object-cover"
+                  sizes="200px"
+                />
+              </div>
             )}
           </div>
 
@@ -230,7 +257,7 @@ export function PortfolioForm({
             <ImagePicker
               allImages={allImages}
               selectedIds={selectedImageIds}
-              thumbnailUrl={watch("thumbnailUrl") || ""}
+              thumbnailUrl={thumbnailUrl || ""}
               onSelectionChange={setSelectedImageIds}
               onThumbnailChange={(url) => setValue("thumbnailUrl", url)}
             />

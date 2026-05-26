@@ -14,7 +14,7 @@ export default async function AdminPage() {
           <h1 className="text-2xl font-semibold tracking-tight">Portfolio</h1>
           <p className="text-sm text-zinc-500">Manage your portfolio items.</p>
         </div>
-        <Link href="/admin/portfolio/new" className={buttonVariants()}>
+        <Link href="/admin/new" className={buttonVariants()}>
           <IconPlus className="size-4" />
           New Item
         </Link>

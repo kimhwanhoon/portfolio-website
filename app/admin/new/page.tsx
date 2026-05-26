@@ -1,4 +1,4 @@
-import { PortfolioForm } from "../../_components/portfolio-form";
+import { PortfolioForm } from "@/app/admin/_components/portfolio-form";
 
 export default function NewPortfolioPage() {
   return (

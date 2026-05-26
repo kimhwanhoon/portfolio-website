@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { images } from "@/lib/db/schema";
 import { getPortfolioItemForEdit } from "@/lib/queries/portfolio";
-import { PortfolioForm } from "../../../_components/portfolio-form";
+import { PortfolioForm } from "@/app/admin/_components/portfolio-form";
 
 export default async function EditPortfolioPage({
   params,

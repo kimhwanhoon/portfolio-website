@@ -14,7 +14,7 @@ const navItems = [
   },
   {
     label: "New Item",
-    href: "/admin/portfolio/new",
+    href: "/admin/new",
     icon: IconPlus,
   },
   {
