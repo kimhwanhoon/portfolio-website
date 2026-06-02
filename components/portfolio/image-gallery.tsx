@@ -149,6 +149,9 @@ export function ImageGallery({
           },
         }}
         plugins={[Zoom, Fullscreen, Slideshow, Thumbnails, Counter, Captions]}
+        // Don't lock <body> scroll: this app scrolls on window, and YARL's
+        // `height:100%;overflow:hidden` body lock resets scroll to top on close.
+        noScroll={{ disabled: true }}
         carousel={{ finite: allImages.length <= 1 }}
         counter={{ container: { style: { top: "unset", bottom: 0 } } }}
         zoom={{ maxZoomPixelRatio: 3, doubleTapDelay: 250 }}

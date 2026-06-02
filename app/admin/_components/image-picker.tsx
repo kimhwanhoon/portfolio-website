@@ -296,6 +296,9 @@ export function ImagePicker({
         slides={slides}
         on={{ view: ({ index }) => setLightboxIndex(index) }}
         plugins={[Zoom, Counter]}
+        // Don't lock <body> scroll: this app scrolls on window, and YARL's
+        // `height:100%;overflow:hidden` body lock resets scroll to top on close.
+        noScroll={{ disabled: true }}
         carousel={{ finite: selectedImages.length <= 1 }}
         counter={{ container: { style: { top: "unset", bottom: 0 } } }}
         zoom={{ maxZoomPixelRatio: 3 }}
