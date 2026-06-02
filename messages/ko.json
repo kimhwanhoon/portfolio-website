@@ -10,7 +10,8 @@
     "about": "소개",
     "contact": "연락하기",
     "openMenu": "메뉴 열기",
-    "closeMenu": "메뉴 닫기"
+    "closeMenu": "메뉴 닫기",
+    "admin": "관리자"
   },
   "hero": {
     "label": "프론트엔드 개발자",

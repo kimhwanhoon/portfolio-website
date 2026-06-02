@@ -51,7 +51,7 @@ export function SiteHeader() {
                 className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
               >
                 <IconSettings className="size-3.5" />
-                Admin
+                {t("admin")}
               </Link>
             )}
           </nav>

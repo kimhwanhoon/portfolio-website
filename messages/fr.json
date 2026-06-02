@@ -10,7 +10,8 @@
     "about": "À propos",
     "contact": "Contact",
     "openMenu": "Ouvrir le menu",
-    "closeMenu": "Fermer le menu"
+    "closeMenu": "Fermer le menu",
+    "admin": "Admin"
   },
   "hero": {
     "label": "Développeur Frontend",

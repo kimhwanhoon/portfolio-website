@@ -1,7 +1,7 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Inter, Montserrat } from "next/font/google";
-import { getLocale } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { ThemeProvider } from "@/components/providers/theme-provider";
@@ -47,6 +47,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const locale = await getLocale();
+  const t = await getTranslations("common");
 
   return (
     <ClerkProvider>
@@ -72,7 +73,7 @@ export default async function RootLayout({
               href="#main"
               className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:text-primary-foreground"
             >
-              Skip to content
+              {t("skipToContent")}
             </a>
             {children}
             <Analytics />
