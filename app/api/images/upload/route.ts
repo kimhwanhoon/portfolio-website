@@ -11,7 +11,7 @@ const ALLOWED_TYPES = [
   "image/gif",
   "image/avif",
 ];
-const MAX_SIZE_MB = 10;
+const MAX_SIZE_MB = 20;
 const MAX_SIZE = MAX_SIZE_MB * 1024 * 1024;
 
 export async function POST(request: Request) {

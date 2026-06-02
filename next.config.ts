@@ -26,7 +26,7 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   experimental: {
     // Must be >= MAX_SIZE in app/api/images/upload/route.ts.
-    proxyClientMaxBodySize: "10mb",
+    proxyClientMaxBodySize: "20mb",
   },
   images: {
     remotePatterns: [

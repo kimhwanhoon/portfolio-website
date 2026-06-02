@@ -33,7 +33,7 @@ export function ImageGrid({ images }: ImageGridProps) {
   if (images.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-12">
-        <p className="text-sm text-zinc-500">No images uploaded yet.</p>
+        <p className="text-sm text-muted-foreground">No images uploaded yet.</p>
       </div>
     );
   }
@@ -43,7 +43,7 @@ export function ImageGrid({ images }: ImageGridProps) {
       {images.map((image) => (
         <div
           key={image.id}
-          className="group relative overflow-hidden rounded-lg border bg-zinc-50"
+          className="group relative overflow-hidden rounded-lg border bg-muted"
         >
           <div className="relative aspect-video">
             <Image
@@ -56,7 +56,7 @@ export function ImageGrid({ images }: ImageGridProps) {
           </div>
           <div className="space-y-1.5 p-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-zinc-500">
+              <span className="text-xs text-muted-foreground">
                 {formatFileSize(image.fileSize)}
               </span>
               {image.portfolioId && (
@@ -67,7 +67,7 @@ export function ImageGrid({ images }: ImageGridProps) {
             </div>
             <p
               className={`line-clamp-2 min-h-9 text-xs ${
-                image.alt ? "text-zinc-700" : "text-zinc-400 italic"
+                image.alt ? "text-foreground" : "text-muted-foreground italic"
               }`}
               title={image.alt ?? undefined}
             >

@@ -3,10 +3,20 @@
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { routing } from "@/i18n/routing";
 import { requireAdmin } from "@/lib/auth/admin";
 import { db } from "@/lib/db";
-import { images, imageTranslations } from "@/lib/db/schema";
+import { images, imageTranslations, portfolioItems } from "@/lib/db/schema";
 import { R2_BUCKET, r2Client } from "@/lib/r2/client";
+
+/** Revalidate the public pages affected when a portfolio's images change. */
+function revalidatePortfolioPublicPages(slug: string) {
+  for (const locale of routing.locales) {
+    revalidatePath(`/${locale}`);
+    revalidatePath(`/${locale}/portfolio/${slug}`);
+  }
+  revalidatePath("/");
+}
 
 export async function saveImageRecord(data: {
   url: string;
@@ -63,6 +73,16 @@ export async function deleteImage(id: string) {
   await db.delete(images).where(eq(images.id, id));
 
   revalidatePath("/admin/images");
+
+  // If the image was attached to a portfolio, refresh the public pages so the
+  // gallery no longer serves the deleted image from cache.
+  if (image.portfolioId) {
+    const portfolio = await db.query.portfolioItems.findFirst({
+      where: eq(portfolioItems.id, image.portfolioId),
+      columns: { slug: true },
+    });
+    if (portfolio) revalidatePortfolioPublicPages(portfolio.slug);
+  }
 }
 
 export async function updateImageAlt(id: string, alt: string) {

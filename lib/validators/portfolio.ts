@@ -6,14 +6,14 @@ import {
 
 const portfolioTranslationSchema = z.object({
   title: z.string().min(1, "Title is required").max(255),
-  shortDescription: z.string().min(1, "Short description is required").max(300),
+  shortDescription: z.string().min(1, "Short description is required").max(500),
   fullDescription: z.string().min(1, "Full description is required"),
 });
 
 /** Looser fields-only schema for non-default locales in the client form. */
 const portfolioTranslationFormFieldsSchema = z.object({
   title: z.string().max(255),
-  shortDescription: z.string().max(300),
+  shortDescription: z.string().max(500),
   fullDescription: z.string(),
 });
 

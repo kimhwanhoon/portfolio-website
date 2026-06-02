@@ -17,8 +17,11 @@ export default async function EditPortfolioPage({
 
   const allImages = await getAllImagesForAdmin();
 
+  // Preserve the saved gallery order (sortOrder); the picker treats the array
+  // order as the gallery sort order.
   const assignedImageIds = allImages
     .filter((img) => img.portfolioId === id)
+    .sort((a, b) => a.sortOrder - b.sortOrder)
     .map((img) => img.id);
 
   const formImages = allImages.map((img) => ({
