@@ -128,7 +128,9 @@ export async function getPortfolioBySlug(
       alt: coalesceTranslation(imageT.alt, imageTEn.alt),
     })
     .from(images)
-    .innerJoin(
+    // LEFT join: an image must still appear even if it has no default-locale
+    // alt translation row (alt is optional). coalesce(alt) handles the null.
+    .leftJoin(
       imageTEn,
       and(eq(imageTEn.imageId, images.id), eq(imageTEn.locale, DEFAULT_LOCALE)),
     )

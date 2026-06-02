@@ -77,7 +77,8 @@
   "detail": {
     "backToPortfolio": "Back to portfolio",
     "liveSite": "Live Site",
-    "sourceCode": "Source Code"
+    "sourceCode": "Source Code",
+    "viewImage": "View full size"
   },
   "common": {
     "skipToContent": "Skip to content",

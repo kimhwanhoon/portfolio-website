@@ -45,7 +45,11 @@ export async function PortfolioDetail({ item }: PortfolioDetailProps) {
 
   return (
     <div className="space-y-6">
-      <ImageGallery images={item.images} thumbnailUrl={item.thumbnailUrl} />
+      <ImageGallery
+        images={item.images}
+        thumbnailUrl={item.thumbnailUrl}
+        viewLabel={t("viewImage")}
+      />
 
       <div className="space-y-4">
         <div className="space-y-2">

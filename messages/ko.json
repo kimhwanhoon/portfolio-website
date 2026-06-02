@@ -77,7 +77,8 @@
   "detail": {
     "backToPortfolio": "포트폴리오로 돌아가기",
     "liveSite": "라이브 사이트",
-    "sourceCode": "소스 코드"
+    "sourceCode": "소스 코드",
+    "viewImage": "원본 크기로 보기"
   },
   "common": {
     "skipToContent": "본문으로 건너뛰기",

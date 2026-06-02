@@ -1,5 +1,8 @@
 import { z } from "zod";
-import { translationsObject } from "@/lib/i18n/zod-helpers";
+import {
+  mixedTranslationsObject,
+  translationsObject,
+} from "@/lib/i18n/zod-helpers";
 
 const portfolioTranslationSchema = z.object({
   title: z.string().min(1, "Title is required").max(255),
@@ -27,10 +30,23 @@ const portfolioBaseSchema = z.object({
   endDate: z.coerce.date().optional().nullable(),
 });
 
-/** Server schema: validates the payload sent to server actions. */
+/**
+ * Server schema: validates the payload sent to server actions.
+ *
+ * The default locale is strict (required fields). Non-default locales are
+ * parsed loosely so a present-but-empty translation (which the client form
+ * always sends for every locale) passes parsing; the server then drops empty
+ * ones and strictly re-validates the rest with `portfolioTranslationSchema`.
+ */
 export const portfolioSchema = portfolioBaseSchema.extend({
-  translations: translationsObject(portfolioTranslationSchema),
+  translations: mixedTranslationsObject(
+    portfolioTranslationSchema,
+    portfolioTranslationFormFieldsSchema,
+  ),
 });
+
+/** Strict per-translation schema, exported for the server-side re-check. */
+export { portfolioTranslationSchema };
 
 /** Client form schema: same shape but with looser non-default locale fields. */
 export const portfolioFormSchema = portfolioBaseSchema.extend({

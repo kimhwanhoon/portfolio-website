@@ -14,7 +14,11 @@ import {
   upsertPortfolioTranslation,
 } from "@/lib/db/translations";
 import { R2_BUCKET, r2Client } from "@/lib/r2/client";
-import { portfolioSchema } from "@/lib/validators/portfolio";
+import {
+  portfolioSchema,
+  portfolioTranslationSchema,
+} from "@/lib/validators/portfolio";
+import { z } from "zod";
 
 function slugify(text: string): string {
   return text
@@ -35,12 +39,33 @@ function revalidateAll() {
 
 function normalizePortfolioPayload(data: unknown) {
   const validated = portfolioSchema.parse(data);
+
+  // Keep the default locale plus any non-default locale the admin filled in.
   const translations = Object.fromEntries(
     Object.entries(validated.translations).filter(
       ([locale, values]) =>
         locale === routing.defaultLocale || !isTranslationEmpty(values),
     ),
   ) as typeof validated.translations;
+
+  // Non-default locales were parsed loosely; now that empties are dropped,
+  // strictly validate the ones that remain so a partially-filled translation
+  // is rejected with a path-prefixed error the form can surface.
+  const issues: z.ZodIssue[] = [];
+  for (const [locale, values] of Object.entries(translations)) {
+    if (locale === routing.defaultLocale) continue;
+    const result = portfolioTranslationSchema.safeParse(values);
+    if (!result.success) {
+      issues.push(
+        ...result.error.issues.map((issue) => ({
+          ...issue,
+          path: ["translations", locale, ...issue.path],
+        })),
+      );
+    }
+  }
+  if (issues.length > 0) throw new z.ZodError(issues);
+
   return { ...validated, translations };
 }
 
