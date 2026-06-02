@@ -28,6 +28,17 @@ const nextConfig: NextConfig = {
     // Must be >= MAX_SIZE in app/api/images/upload/route.ts.
     proxyClientMaxBodySize: "20mb",
   },
+  // Send all traffic from the `blog.` subdomain to the canonical /blog path.
+  // next.config redirects run before proxy.ts (the i18n middleware), so the
+  // locale prefix is applied on the destination by the main domain afterwards.
+  redirects: async () => [
+    {
+      source: "/:path*",
+      has: [{ type: "host", value: "blog.hwanhoon.kim" }],
+      destination: "https://hwanhoon.kim/blog",
+      permanent: true,
+    },
+  ],
   images: {
     remotePatterns: [
       {
