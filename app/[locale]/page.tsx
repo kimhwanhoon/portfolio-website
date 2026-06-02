@@ -28,7 +28,10 @@ export async function generateMetadata({
   );
 
   return {
-    title: t("title"),
+    // Home title is already a full title ("Kim Hwanhoon | Frontend Developer").
+    // Use `absolute` so the parent layout's "%s | Kim Hwanhoon" template is not
+    // applied on top, which would duplicate the name.
+    title: { absolute: t("title") },
     description: t("description"),
     alternates,
     openGraph: {
