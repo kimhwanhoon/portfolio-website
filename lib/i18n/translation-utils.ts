@@ -40,6 +40,10 @@ export function isTranslationEmpty(
   for (const [key, value] of Object.entries(values)) {
     if (key === "contentJson") {
       if (!isTiptapDocEmpty(value)) hasContent = true;
+    } else if (key === "contentHtml") {
+      // Derived from contentJson; an empty editor still serializes to "<p></p>",
+      // so it must not count as content. contentJson is the source of truth.
+      continue;
     } else if (typeof value === "string" && value.trim() !== "") {
       hasContent = true;
     }
