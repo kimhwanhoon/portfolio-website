@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0.4" y2="1">
+      <stop offset="0" stop-color="#FBFAF8"/>
+      <stop offset="1" stop-color="#EFEDE7"/>
+    </linearGradient>
+    <linearGradient id="ink" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#111111"/>
+      <stop offset="1" stop-color="#2A2A2A"/>
+    </linearGradient>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="26" flood-color="#0A0A0A" flood-opacity="0.10"/>
+    </filter>
+  </defs>
+
+  <!-- Canvas -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Abstract motif: one surface, two experiences.
+       Back card = the standalone page (outline). Front card = the modal (raised). -->
+  <g transform="translate(770 150)">
+    <!-- page (back) -->
+    <rect x="60" y="36" width="360" height="300" rx="24" fill="#FFFFFF" stroke="#E3E1DA" stroke-width="2"/>
+    <rect x="92" y="74" width="150" height="14" rx="7" fill="#ECEAE3"/>
+    <rect x="92" y="104" width="296" height="10" rx="5" fill="#F0EEE8"/>
+    <rect x="92" y="126" width="250" height="10" rx="5" fill="#F0EEE8"/>
+
+    <!-- modal (front, raised) -->
+    <g filter="url(#soft)">
+      <rect x="0" y="0" width="300" height="210" rx="20" fill="#FFFFFF" stroke="#E8E6DF" stroke-width="1.5"/>
+    </g>
+    <rect x="26" y="30" width="120" height="120" rx="14" fill="#F1EFE9"/>
+    <rect x="166" y="34" width="108" height="14" rx="7" fill="#1A1A1A"/>
+    <rect x="166" y="62" width="92" height="10" rx="5" fill="#D9D7D0"/>
+    <rect x="166" y="82" width="100" height="10" rx="5" fill="#E6E4DD"/>
+    <rect x="166" y="102" width="70" height="10" rx="5" fill="#E6E4DD"/>
+    <rect x="26" y="170" width="90" height="14" rx="7" fill="#1A1A1A"/>
+  </g>
+
+  <!-- Eyebrow -->
+  <text x="80" y="128" font-family="Helvetica Neue, Helvetica, Arial, sans-serif"
+        font-size="22" font-weight="600" letter-spacing="6" fill="#9A968C">NEXT.JS · APP ROUTER</text>
+
+  <!-- Title -->
+  <text x="76" y="312" font-family="Helvetica Neue, Helvetica, Arial, sans-serif"
+        font-size="86" font-weight="700" letter-spacing="-3" fill="url(#ink)">One URL,</text>
+  <text x="76" y="404" font-family="Helvetica Neue, Helvetica, Arial, sans-serif"
+        font-size="86" font-weight="700" letter-spacing="-3" fill="url(#ink)">Two Experiences.</text>
+
+  <!-- Divider -->
+  <rect x="80" y="446" width="120" height="5" rx="2.5" fill="#111111"/>
+
+  <!-- Subtitle -->
+  <text x="80" y="500" font-family="Helvetica Neue, Helvetica, Arial, sans-serif"
+        font-size="26" font-weight="400" fill="#6B675E">Refresh-proof modals with parallel &amp; intercepting routes</text>
+
+  <!-- Footer -->
+  <text x="80" y="566" font-family="Helvetica Neue, Helvetica, Arial, sans-serif"
+        font-size="22" font-weight="500" fill="#9A968C">Kim Hwanhoon — Frontend Developer</text>
+  <rect x="1064" y="538" width="56" height="56" rx="14" fill="#111111"/>
+  <text x="1092" y="576" text-anchor="middle" font-family="Helvetica Neue, Helvetica, Arial, sans-serif"
+        font-size="24" font-weight="700" letter-spacing="-1" fill="#FAFAFA">KH</text>
+</svg>

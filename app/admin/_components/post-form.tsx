@@ -24,6 +24,7 @@ import {
   postFormSchema,
   postSchema,
 } from "@/lib/validators/post";
+import { CoverImagePicker } from "./cover-image-picker";
 import { LocaleTabs } from "./locale-tabs";
 import {
   EMPTY_TIPTAP_DOC,
@@ -455,26 +456,13 @@ export function PostForm({ initialData, availableImages = [] }: PostFormProps) {
               placeholder="https://... or pick below"
               {...register("coverImageUrl")}
             />
-            {availableImages.length > 0 && (
-              <div className="flex flex-wrap gap-2 pt-2">
-                {availableImages.slice(0, 8).map((img) => (
-                  <button
-                    key={img.id}
-                    type="button"
-                    onClick={() => setValue("coverImageUrl", img.url)}
-                    className="relative size-16 overflow-hidden rounded-md border hover:ring-2 hover:ring-primary"
-                  >
-                    <Image
-                      src={img.url}
-                      alt={img.alt ?? ""}
-                      fill
-                      className="object-cover"
-                      sizes="64px"
-                    />
-                  </button>
-                ))}
-              </div>
-            )}
+            <CoverImagePicker
+              images={availableImages}
+              selectedUrl={coverImageUrl ?? ""}
+              onSelect={(url) =>
+                setValue("coverImageUrl", url, { shouldDirty: true })
+              }
+            />
             {coverImageUrl && (
               <div className="relative mt-2 aspect-[4/3] w-48 overflow-hidden rounded-md border">
                 <Image
