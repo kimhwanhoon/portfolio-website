@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { InlineMarkdown } from "@/components/blog/inline-markdown";
 import { PostContent } from "@/components/blog/post-content";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
@@ -134,11 +135,11 @@ export default async function BlogPostPage({
             </div>
           )}
           <h1 className="font-heading text-4xl font-bold tracking-tight leading-[1.1] md:text-6xl">
-            {post.title}
+            <InlineMarkdown content={post.title} />
           </h1>
           {post.excerpt && (
             <p className="text-lg leading-relaxed text-muted-foreground md:text-xl">
-              {post.excerpt}
+              <InlineMarkdown content={post.excerpt} />
             </p>
           )}
           <div className="mt-4 flex items-end justify-end gap-3 border-t border-border py-4 text-sm text-muted-foreground">
